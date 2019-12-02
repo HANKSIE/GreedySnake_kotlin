@@ -12,12 +12,13 @@ import java.util.*
 class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
 
     lateinit var tileMap: TileMap
+    var bodys = ArrayList<Body>()
+    var playerHead = mapOf<String, Int>()
 
     val gridPaint = Paint().apply {
         color = Color.YELLOW
         style = Paint.Style.STROKE
     }
-
     val tilePaint = Paint().apply {
         color = Color.RED
     }
@@ -34,7 +35,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
         setContentView(R.layout.activity_main)
         surfaceView.holder.addCallback(this)
 
-        timer.schedule(task, 0, 100)
+//        timer.schedule(task, 0, 100)
     }
 
     override fun surfaceCreated(holder: SurfaceHolder?) {
@@ -48,16 +49,16 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
 
         val wall = Wall.initWall(tileMap)
 
-        GameManager.add(mySnake)
-        GameManager.add(wall)
-        drawBodys(GameManager.bodys, holder!!)
+        bodys.add(mySnake)
+        bodys.add(wall)
+        drawBodys(bodys, holder!!)
     }
 
     override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {}
 
     override fun surfaceDestroyed(holder: SurfaceHolder?) {}
 
-    private fun tryDrawing(holder: SurfaceHolder) {
+    fun tryDrawing(holder: SurfaceHolder) {
         Log.i("訊息", "Trying to draw...")
         val canvas: Canvas? = holder.lockCanvas()
         if (canvas == null) {
@@ -68,7 +69,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
         }
     }
 
-    private fun adjustBitmap(bitmap: Bitmap, scale: Float) : Bitmap {
+    fun adjustBitmap(bitmap: Bitmap, scale: Float) : Bitmap {
         val width = bitmap.width
         val height = bitmap.height
         val mat = Matrix()
@@ -153,10 +154,6 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
         holder.unlockCanvasAndPost(canvas)
     }
 
-    fun update(){
-
-    }
-
     fun getColor(tag: Tile.Companion.Type) =  when(tag){
         Tile.Companion.Type.WALL -> Color.GRAY
         Tile.Companion.Type.SNAKE_HEAD -> Color.RED
@@ -166,5 +163,41 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
             Color.BLACK
         }
     }
+
+    fun findBodyByTag(tag: Body.BodyType): Body? {
+        bodys.iterator().forEach {
+            if (it.tag == tag){
+                return it
+            }
+        }
+        return null
+    }
+
+    fun findTileByTag(body: Body, tag: Tile.Companion.Type): Tile?{
+        body.widgets.iterator().forEach {
+            if (it.tag == tag){
+                return it
+            }
+        }
+        return null
+    }
+
+    fun gameStart(){
+        timer.schedule(task, 0, 100)
+    }
+
+    fun update(){
+
+    }
+
+    fun isCollision(): Boolean{
+       
+    }
+
+    fun gameStop(){
+
+    }
+
+
 
 }
