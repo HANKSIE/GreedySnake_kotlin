@@ -1,3 +1,7 @@
+/*
+ * 主類別
+ */
+
 package com.example.greedysnake_kotlin
 
 import android.graphics.*
@@ -7,23 +11,29 @@ import android.view.SurfaceHolder
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
-import kotlin.collections.ArrayList
 
+/*
+ * tileMap: 存取tileMap
+ * gridPaint: 畫格線的paint
+ * tilePaint: 畫map元素的paint
+ * timer: 畫面更新用的timer
+ * task: 進行的任務(更新畫面)
+ */
 
 class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
 
     lateinit var tileMap: TileMap
-    var bodys = ArrayList<Body>()
 
     val gridPaint = Paint().apply {
         color = Color.YELLOW
-        style = Paint.Style.STROKE
+        strokeWidth = 2f
     }
     val tilePaint = Paint().apply {
         color = Color.RED
     }
 
     val timer = Timer()
+    lateinit var task: TimerTask
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,27 +50,19 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
         mySnake.addWidget(SnakeWidget(7,11,Block.Companion.Type.SNAKE_HEAD))
         mySnake.addWidget(SnakeWidget(6,11,Block.Companion.Type.SNAKE_WIDGET))
 
-        val mySnake2 = Snake(tag = Body.Companion.BodyType.ME, dir = Snake.Companion.Direction.DOWN)
-
-        mySnake2.addWidget(SnakeWidget(15,4,Block.Companion.Type.SNAKE_HEAD))
-        mySnake2.addWidget(SnakeWidget(15,3,Block.Companion.Type.SNAKE_WIDGET))
-
         val wall = Wall.initWall(tileMap)
 
+        BodyContainer.add(mySnake)
+        BodyContainer.add(wall)
 
-        bodys.add(mySnake)
-        bodys.add(mySnake2)
-        bodys.add(wall)
-
-        val task = object: TimerTask() {
+        task = object: TimerTask() {
             override fun run() {
-                tileMap.init()
-                setBodys2tileMap()
                 update()
                 draw(holder)
             }
         }
-        timer.schedule(task, 0, 500)
+
+        gameStart()
 
     }
 
@@ -68,13 +70,14 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
 
     override fun surfaceDestroyed(holder: SurfaceHolder?) {}
 
-    fun getTileMap(holder: SurfaceHolder?, gridColumn: Int = 30, gridRow: Int = 30): TileMap {
+    /*取得tileMap*/
+    fun getTileMap(holder: SurfaceHolder?, gridColumn: Int = 50, gridRow: Int = 50): TileMap {
 
         val canvas = holder!!.lockCanvas()
         val screenWidth = canvas.width
         val screenHeight = canvas.height
-        val tileWidth = screenWidth / gridRow
-        val tileHeight = screenHeight / gridColumn
+        val tileWidth = screenWidth.toFloat() / gridRow
+        val tileHeight = screenHeight.toFloat() / gridColumn
 
 //        Log.i("寬", screenWidth.toString())
 //        Log.i("高", screenHeight.toString())
@@ -83,19 +86,16 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
 
         val tileMap = TileMap(gridColumn, gridRow, tileWidth,tileHeight)
         var count = 0
-        var y = 0
+        var y = 0f
 
         for (i in 0 until gridColumn){
-            var x = 0
+            var x = 0f
             for (j in 0 until gridRow) {
                 tileMap.map[i][j]?.apply {
                     positionX = x
                     positionY = y
                 }
                 x += tileWidth
-//                Log.i("X", x.toString())
-//                Log.i("Y", y.toString())
-//                Log.i("訊息", count++.toString())
             }
             y += tileHeight
         }
@@ -104,13 +104,15 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
         return tileMap
     }
 
+    /*繪圖*/
     fun draw(holder: SurfaceHolder){
         val canvas = holder.lockCanvas()
-        drawBodys(canvas)
+        drawTileMap(canvas)
         drawGridLine(canvas)
         holder.unlockCanvasAndPost(canvas)
     }
 
+    /*畫格線*/
     fun drawGridLine(canvas: Canvas) {
 
         val screenWidth = canvas.width.toFloat()
@@ -127,7 +129,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
             pointX += tileWidth
             count++
         }
-        Log.i("Count", count.toString())
+//        Log.i("Count", count.toString())
         while (pointY < screenHeight){
             canvas.drawLine(0f, pointY, screenWidth, pointY, gridPaint)
             pointY += tileHeight
@@ -135,7 +137,8 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
 
     }
 
-    fun drawBodys(canvas: Canvas){
+    /*畫地圖*/
+    fun drawTileMap(canvas: Canvas){
 
         tileMap.map.iterator().forEach {
             it.iterator().forEach {
@@ -150,6 +153,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
 
     }
 
+    /*取得畫元件對應的顏色*/
     fun getColor(tag: Block.Companion.Type) =  when(tag){
         Block.Companion.Type.WALL -> Color.GRAY
         Block.Companion.Type.SNAKE_HEAD -> Color.RED
@@ -160,40 +164,27 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
         }
     }
 
-    fun findBodyByTag(tag: Body.Companion.BodyType): Body? {
-        bodys.iterator().forEach {
-            if (it.tag == tag){
-                return it
-            }
-        }
-        return null
-    }
-
-    fun findWidgetByTag(body: Body, tag: Block.Companion.Type): GameObjectWidget?{
-        body.widgets.iterator().forEach {
-            if (it.tag == tag){
-                return it
-            }
-        }
-        return null
-    }
-
-    fun gameStart(){
-
-    }
-
+    /*更新*/
     fun update(){
-        bodys.iterator().forEach {
+
+        tileMap.init()
+        setBodys2tileMap()
+
+        BodyContainer.bodys.iterator().forEach {
             when(it.tag){
-                Body.Companion.BodyType.ME-> {
+                Body.Companion.BodyType.ME, Body.Companion.BodyType.ENEMY-> {
                     move(it as Snake)
                 }
             }
         }
 
+        if (isCollision()){
+            gameStop()
+        }
 
     }
 
+    /*移動snake的位置(僅Snake.widget的位置，並非地圖上的位置)*/
     fun move(snake: Snake){
         snake.widgets.iterator().forEach {
             it as SnakeWidget
@@ -233,20 +224,41 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
 
     }
 
+    /*將每個Body畫在地圖上*/
     fun setBodys2tileMap(){
-        for (body in bodys){
+        for (body in BodyContainer.bodys){
             tileMap.setTileTagByBody(body)
         }
     }
 
-//    fun isCollision(): Boolean{
-//
-//    }
-
-    fun gameStop(){
-
+    /*取得蛇的頭部*/
+    fun getMyHead(): SnakeWidget{
+        val mySnake = BodyContainer.findBodyByTag(Body.Companion.BodyType.ME)
+        val myHead = mySnake?.findWidgetByTag(mySnake , Block.Companion.Type.SNAKE_HEAD)
+        return myHead as SnakeWidget
     }
 
+    /*碰撞檢測*/
+    fun isCollision(): Boolean{
+        var myHead = getMyHead()
+        val x = myHead.x
+        val y = myHead.y
+        val flag = (tileMap.map[x][y]?.tag == Block.Companion.Type.WALL)
+
+        return flag
+    }
+
+    /*遊戲開始*/
+    fun gameStart(){
+        timer.schedule(task, 0, 100)
+    }
+
+    /*遊戲停止*/
+    fun gameStop(){
+        task.cancel()
+    }
+
+    /*調整Bitmap比例*/
     fun adjustBitmap(bitmap: Bitmap, scale: Float) : Bitmap {
         val width = bitmap.width
         val height = bitmap.height

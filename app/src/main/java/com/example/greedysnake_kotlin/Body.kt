@@ -14,7 +14,7 @@ abstract class Body(tag: BodyType) {
 
     var tag = tag
     /*身體部件清單*/
-    var widgets = ArrayList<GameObjectWidget>()
+    var widgets = ArrayList<GameWidget>()
 
     /*玩家類型*/
     companion object{
@@ -23,8 +23,18 @@ abstract class Body(tag: BodyType) {
         }
     }
 
-    fun addWidget(widget: GameObjectWidget){
+    fun addWidget(widget: GameWidget){
         widgets.add(widget)
+    }
+
+    /*利用gameWidget.tag查找gameWidget*/
+    fun findWidgetByTag(body: Body, tag: Block.Companion.Type): GameWidget?{
+        body.widgets.iterator().forEach {
+            if (it.tag == tag){
+                return it
+            }
+        }
+        return null
     }
 
 }

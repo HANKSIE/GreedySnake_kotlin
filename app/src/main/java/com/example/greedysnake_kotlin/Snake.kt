@@ -1,4 +1,14 @@
+/*
+ * 貪食蛇主體
+ */
+
 package com.example.greedysnake_kotlin
+
+/*
+ * speed: 移動速度
+ * dir: 方向
+ * Direction: 方向類型
+ */
 
 class Snake(speed: Int = 0, dir: Direction = Direction.NONE, tag: Body.Companion.BodyType) : Body(tag) {
 

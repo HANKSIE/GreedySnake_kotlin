@@ -1,8 +1,20 @@
+/*
+ * 處理地圖的類別
+ */
+
 package com.example.greedysnake_kotlin
 
 import android.util.Log
 
-class TileMap(gridColumn: Int, gridRow: Int, tileWidth: Int, tileHeight: Int){
+/*
+ * gridColumn: 橫向格子數量
+ * gridRow: 縱向格子數量
+ * tileWidth: 地圖元素單位寬
+ * tileHeight: 地圖元素單位高
+ * map: 存處地圖元素的二維陣列
+ */
+
+class TileMap(gridColumn: Int, gridRow: Int, tileWidth: Float, tileHeight: Float){
 
     val gridColumn = gridColumn
     val gridRow = gridRow
@@ -10,6 +22,7 @@ class TileMap(gridColumn: Int, gridRow: Int, tileWidth: Int, tileHeight: Int){
     val tileHeight = tileHeight
     val map = Array(gridColumn, {arrayOfNulls<Tile>(gridRow)})
 
+    /*地圖初始化，將map裡面塞滿tile*/
     init {
         for (i in map.indices){
             for (j in map[i].indices){
@@ -18,6 +31,7 @@ class TileMap(gridColumn: Int, gridRow: Int, tileWidth: Int, tileHeight: Int){
         }
     }
 
+    /*對已經塞滿tile的map進行tile.tag的初始化*/
     fun init(){
         map.iterator().forEach {
             it.iterator().forEach {
@@ -26,6 +40,7 @@ class TileMap(gridColumn: Int, gridRow: Int, tileWidth: Int, tileHeight: Int){
         }
     }
 
+    /*將Body的GameWidget.tag到相對應的map位置*/
     fun setTileTagByBody(body: Body){
         for (widget in body.widgets){
             val x = widget.x
@@ -39,7 +54,7 @@ class TileMap(gridColumn: Int, gridRow: Int, tileWidth: Int, tileHeight: Int){
         }
     }
 
-    fun showAllTiles(){
+    fun showAllTilesInfo(){
         map.iterator().forEach {
             it.iterator().forEach {
                 Log.e("Tile positionX", it?.positionX.toString())
