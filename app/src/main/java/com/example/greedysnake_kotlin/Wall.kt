@@ -1,20 +1,21 @@
 package com.example.greedysnake_kotlin
 
-class Wall(tag: BodyType) : Body(tag) {
+class Wall(x: Int= -1 , y: Int = -1, tag: Body.Companion.BodyType = Body.Companion.BodyType.WALL) : Body(tag) {
 
-        companion object{
+    companion object{
         fun initWall(tileMap: TileMap) :Body{
-            val wall = Wall(tag = BodyType.WALL)
+            val wall = Wall()
             for (i in tileMap.map.indices){
                 if(i == 0 || i == tileMap.map.size-1){
-                    for (widget in tileMap.map[i]){
-                        wall.addWidget(widget!!.row, widget!!.column, Tile.Companion.Type.WALL, tileMap)
+                    for (j in tileMap.map[i].indices){
+                        wall.addWidget(WallWidget(i,j,Block.Companion.Type.WALL))
                     }
                 }else{
-                    val start = tileMap.map[i].first()!!
-                    val end = tileMap.map[i].last()!!
-                    wall.addWidget(start.row, start.column, Tile.Companion.Type.WALL, tileMap)
-                    wall.addWidget(end.row, end.column, Tile.Companion.Type.WALL, tileMap)
+                    val start = 0
+                    val end = tileMap.map[i].size-1
+
+                    wall.addWidget(WallWidget(i,start,Block.Companion.Type.WALL))
+                    wall.addWidget(WallWidget(i,end,Block.Companion.Type.WALL))
                 }
             }
             return wall

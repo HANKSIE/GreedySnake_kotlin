@@ -10,28 +10,21 @@ package com.example.greedysnake_kotlin
  * dir: 方向
  */
 
-abstract class Body(tag: BodyType = BodyType.UNDEFINED) {
+abstract class Body(tag: BodyType) {
 
     var tag = tag
-
     /*身體部件清單*/
-    var widgets = ArrayList<Tile>()
+    var widgets = ArrayList<GameObjectWidget>()
 
     /*玩家類型*/
-    enum class BodyType{
-        UNDEFINED, WALL, ME, ENEMY
+    companion object{
+        enum class BodyType{
+            UNDEFINED, WALL, ME, ENEMY
+        }
     }
 
-    fun addWidget(row: Int, column: Int, tag:Tile.Companion.Type, tileMap: TileMap){
-        tileMap.setTile(row,column, Tile(row,column, tag))
-        val widget = tileMap.getTile(row,column)
+    fun addWidget(widget: GameObjectWidget){
         widgets.add(widget)
     }
-
-    fun removeWidget(block: Tile){
-        widgets.remove(block)
-    }
-
-    fun getWidget(index: Int) = widgets.get(index)
 
 }

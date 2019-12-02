@@ -7,13 +7,13 @@ import android.view.SurfaceHolder
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
 
     lateinit var tileMap: TileMap
     var bodys = ArrayList<Body>()
-    var playerHead = mapOf<String, Int>()
 
     val gridPaint = Paint().apply {
         color = Color.YELLOW
@@ -24,61 +24,51 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
     }
 
     val timer = Timer()
-    val task = object: TimerTask() {
-        override fun run() {
-            update()
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         surfaceView.holder.addCallback(this)
-
-//        timer.schedule(task, 0, 100)
     }
 
     override fun surfaceCreated(holder: SurfaceHolder?) {
 
-        tileMap = getTileMap(holder!!,30,30)
+        tileMap = getTileMap(holder!!)
 
-        val mySnake = Snake(tag = Body.BodyType.ME)
+        val mySnake = Snake(tag = Body.Companion.BodyType.ME, dir = Snake.Companion.Direction.RIGHT)
 
-        mySnake.addWidget(5, 4, Tile.Companion.Type.SNAKE_HEAD, tileMap)
-        mySnake.addWidget(6, 4, Tile.Companion.Type.SNAKE_WIDGET, tileMap)
+        mySnake.addWidget(SnakeWidget(7,11,Block.Companion.Type.SNAKE_HEAD))
+        mySnake.addWidget(SnakeWidget(6,11,Block.Companion.Type.SNAKE_WIDGET))
+
+        val mySnake2 = Snake(tag = Body.Companion.BodyType.ME, dir = Snake.Companion.Direction.DOWN)
+
+        mySnake2.addWidget(SnakeWidget(15,4,Block.Companion.Type.SNAKE_HEAD))
+        mySnake2.addWidget(SnakeWidget(15,3,Block.Companion.Type.SNAKE_WIDGET))
 
         val wall = Wall.initWall(tileMap)
 
+
         bodys.add(mySnake)
+        bodys.add(mySnake2)
         bodys.add(wall)
-        drawBodys(bodys, holder!!)
+
+        val task = object: TimerTask() {
+            override fun run() {
+                tileMap.init()
+                setBodys2tileMap()
+                update()
+                draw(holder)
+            }
+        }
+        timer.schedule(task, 0, 500)
+
     }
 
     override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {}
 
     override fun surfaceDestroyed(holder: SurfaceHolder?) {}
 
-    fun tryDrawing(holder: SurfaceHolder) {
-        Log.i("訊息", "Trying to draw...")
-        val canvas: Canvas? = holder.lockCanvas()
-        if (canvas == null) {
-            Log.e("訊息", "Cannot draw onto the canvas as it's null")
-        } else {
-//            draw(canvas)
-            holder.unlockCanvasAndPost(canvas)
-        }
-    }
-
-    fun adjustBitmap(bitmap: Bitmap, scale: Float) : Bitmap {
-        val width = bitmap.width
-        val height = bitmap.height
-        val mat = Matrix()
-        mat.setScale(scale,scale)
-
-        return Bitmap.createBitmap(bitmap,0,0,width,height,mat,true)
-    }
-
-    fun getTileMap(holder: SurfaceHolder?, gridColumn: Int = 20, gridRow: Int = 20): TileMap {
+    fun getTileMap(holder: SurfaceHolder?, gridColumn: Int = 30, gridRow: Int = 30): TileMap {
 
         val canvas = holder!!.lockCanvas()
         val screenWidth = canvas.width
@@ -86,22 +76,26 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
         val tileWidth = screenWidth / gridRow
         val tileHeight = screenHeight / gridColumn
 
-        Log.i("寬", screenWidth.toString())
-        Log.i("高", screenHeight.toString())
-        Log.i("單位寬", tileWidth.toString())
-        Log.i("單位高", tileHeight.toString())
+//        Log.i("寬", screenWidth.toString())
+//        Log.i("高", screenHeight.toString())
+//        Log.i("單位寬", tileWidth.toString())
+//        Log.i("單位高", tileHeight.toString())
 
         val tileMap = TileMap(gridColumn, gridRow, tileWidth,tileHeight)
         var count = 0
         var y = 0
+
         for (i in 0 until gridColumn){
             var x = 0
             for (j in 0 until gridRow) {
-                tileMap.setTile(i,j,x,y)
+                tileMap.map[i][j]?.apply {
+                    positionX = x
+                    positionY = y
+                }
                 x += tileWidth
-                Log.i("X", x.toString())
-                Log.i("Y", y.toString())
-                Log.i("訊息", count++.toString())
+//                Log.i("X", x.toString())
+//                Log.i("Y", y.toString())
+//                Log.i("訊息", count++.toString())
             }
             y += tileHeight
         }
@@ -110,7 +104,14 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
         return tileMap
     }
 
-    fun drawGridLine(canvas: Canvas, tileMap :TileMap) {
+    fun draw(holder: SurfaceHolder){
+        val canvas = holder.lockCanvas()
+        drawBodys(canvas)
+        drawGridLine(canvas)
+        holder.unlockCanvasAndPost(canvas)
+    }
+
+    fun drawGridLine(canvas: Canvas) {
 
         val screenWidth = canvas.width.toFloat()
         val screenHeight = canvas.height.toFloat()
@@ -134,37 +135,32 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
 
     }
 
-    fun drawBodys(bodys: ArrayList<Body>,  holder: SurfaceHolder){
+    fun drawBodys(canvas: Canvas){
 
-        val canvas = holder.lockCanvas()
-
-        for (body in bodys){
-            for (widget in body.widgets){
-                val x = widget.x.toFloat()
-                val y = widget.y.toFloat()
-                val w = tileMap.tileWidth.toFloat()
-                val h = tileMap.tileHeight.toFloat()
-                tilePaint.color = getColor(widget.tag)
-                canvas.drawRect(x, y ,x+w, y+h, tilePaint)
+        tileMap.map.iterator().forEach {
+            it.iterator().forEach {
+                val x = it!!.positionX
+                val y = it!!.positionY
+                val w = tileMap.tileWidth
+                val h = tileMap.tileHeight
+                tilePaint.color = getColor(it.tag)
+                canvas.drawRect(x.toFloat(), y.toFloat() ,(x+w).toFloat(), (y+h).toFloat(), tilePaint)
             }
         }
 
-        drawGridLine(canvas, tileMap)
-
-        holder.unlockCanvasAndPost(canvas)
     }
 
-    fun getColor(tag: Tile.Companion.Type) =  when(tag){
-        Tile.Companion.Type.WALL -> Color.GRAY
-        Tile.Companion.Type.SNAKE_HEAD -> Color.RED
-        Tile.Companion.Type.SNAKE_WIDGET -> Color.WHITE
-        Tile.Companion.Type.FOOD -> Color.BLUE
+    fun getColor(tag: Block.Companion.Type) =  when(tag){
+        Block.Companion.Type.WALL -> Color.GRAY
+        Block.Companion.Type.SNAKE_HEAD -> Color.RED
+        Block.Companion.Type.SNAKE_WIDGET -> Color.WHITE
+        Block.Companion.Type.FOOD -> Color.BLUE
         else -> {
             Color.BLACK
         }
     }
 
-    fun findBodyByTag(tag: Body.BodyType): Body? {
+    fun findBodyByTag(tag: Body.Companion.BodyType): Body? {
         bodys.iterator().forEach {
             if (it.tag == tag){
                 return it
@@ -173,7 +169,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
         return null
     }
 
-    fun findTileByTag(body: Body, tag: Tile.Companion.Type): Tile?{
+    fun findWidgetByTag(body: Body, tag: Block.Companion.Type): GameObjectWidget?{
         body.widgets.iterator().forEach {
             if (it.tag == tag){
                 return it
@@ -183,21 +179,81 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
     }
 
     fun gameStart(){
-        timer.schedule(task, 0, 100)
+
     }
 
     fun update(){
+        bodys.iterator().forEach {
+            when(it.tag){
+                Body.Companion.BodyType.ME-> {
+                    move(it as Snake)
+                }
+            }
+        }
+
 
     }
 
-    fun isCollision(): Boolean{
-       
+    fun move(snake: Snake){
+        snake.widgets.iterator().forEach {
+            it as SnakeWidget
+
+            when(snake.dir){
+                Snake.Companion.Direction.UP->{
+                    it.apply {
+                        preX = x
+                        preY = y
+                        y -= 1
+                    }
+                }
+                Snake.Companion.Direction.DOWN->{
+                    it.apply {
+                        preX = x
+                        preY = y
+                        y += 1
+                    }
+                }
+                Snake.Companion.Direction.LEFT->{
+                    it.apply {
+                        preX = x
+                        preY = y
+                        x -= 1
+                    }
+                }
+                Snake.Companion.Direction.RIGHT->{
+                    it.apply {
+                        preX = x
+                        preY = y
+                        x += 1
+                    }
+                }
+            }
+
+        }
+
     }
+
+    fun setBodys2tileMap(){
+        for (body in bodys){
+            tileMap.setTileTagByBody(body)
+        }
+    }
+
+//    fun isCollision(): Boolean{
+//
+//    }
 
     fun gameStop(){
 
     }
 
+    fun adjustBitmap(bitmap: Bitmap, scale: Float) : Bitmap {
+        val width = bitmap.width
+        val height = bitmap.height
+        val mat = Matrix()
+        mat.setScale(scale,scale)
 
+        return Bitmap.createBitmap(bitmap,0,0,width,height,mat,true)
+    }
 
 }
