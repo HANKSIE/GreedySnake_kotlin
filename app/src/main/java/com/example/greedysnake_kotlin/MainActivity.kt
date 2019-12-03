@@ -47,6 +47,11 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
 //        addWidget(SnakeWidget(1,8,Block.Companion.Type.SNAKE_WIDGET))
 //        addWidget(SnakeWidget(2,8,Block.Companion.Type.SNAKE_WIDGET))
 //        addWidget(SnakeWidget(3,8,Block.Companion.Type.SNAKE_WIDGET))
+//        addWidget(SnakeWidget(3,9,Block.Companion.Type.SNAKE_WIDGET))
+//        addWidget(SnakeWidget(3,10,Block.Companion.Type.SNAKE_WIDGET))
+//        addWidget(SnakeWidget(3,11,Block.Companion.Type.SNAKE_WIDGET))
+//        addWidget(SnakeWidget(2,11,Block.Companion.Type.SNAKE_WIDGET))
+//        addWidget(SnakeWidget(2,12,Block.Companion.Type.SNAKE_WIDGET))
     }
 
     val food = Food().apply {
