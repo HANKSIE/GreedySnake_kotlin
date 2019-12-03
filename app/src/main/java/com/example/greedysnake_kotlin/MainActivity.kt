@@ -79,8 +79,8 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
             override fun run() {
                 tileMap.init() //清除地圖
                 setBodys2tileMap() //將身體元件放入地圖
-                update() //更新Body&地圖資料
                 draw(holder) //依據地圖資料畫圖
+                update() //更新Body資料
             }
         }
 
