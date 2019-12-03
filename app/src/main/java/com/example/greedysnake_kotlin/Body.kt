@@ -19,12 +19,20 @@ abstract class Body(tag: BodyType) {
     /*玩家類型*/
     companion object{
         enum class BodyType{
-            UNDEFINED, WALL, ME, ENEMY
+            UNDEFINED, WALL, ME, ENEMY, FOOD
         }
     }
 
     fun addWidget(widget: GameWidget){
         widgets.add(widget)
+    }
+
+    fun removeWidget(gameWidget: GameWidget){
+        widgets.remove(gameWidget)
+    }
+
+    fun removeAllWidget(){
+        widgets = ArrayList<GameWidget>()
     }
 
     /*利用gameWidget.tag查找gameWidget*/
