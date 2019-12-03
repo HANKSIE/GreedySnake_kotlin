@@ -7,6 +7,9 @@
 <br>
 <br>
 ![image](https://github.com/HANKSIE/GreedySnake_kotlin/blob/3d68fe137330e328e51cea375932b2f3d5d7e004/%E5%9F%BA%E6%9C%AC%E7%89%A9%E4%BB%B6%E8%AA%AA%E6%98%8E.png)
+
+!!!設定GameWidget時要注意是否在map的範圍內，超出會報錯!!!
+
 ---
 #流程
 
@@ -18,3 +21,11 @@ loop{<br>
 4.更新所有body的資料(r,c)<br>
 <br>
 }<br>
+
+<br>
+<br>
+
+
+
+
+
