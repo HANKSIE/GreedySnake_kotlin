@@ -7,10 +7,14 @@ package com.example.greedysnake_kotlin
 import android.graphics.*
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import android.view.SurfaceHolder
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.MotionEventCompat
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
+import kotlin.math.abs
 
 /*
  * tileMap: 存取tileMap
@@ -23,7 +27,10 @@ import java.util.*
 class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
 
     lateinit var tileMap: TileMap
-
+    var x1 :Float = 0.0f
+    var x2 :Float = 0.0f
+    var y1 :Float = 0.0f
+    var y2 :Float = 0.0f
     val gridPaint = Paint().apply {
         color = Color.YELLOW
         strokeWidth = 2f
@@ -39,6 +46,41 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         surfaceView.holder.addCallback(this)
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean { //Mickey的傑作
+
+        val action: Int = MotionEventCompat.getActionMasked(event)
+        return when (action) {
+            MotionEvent.ACTION_DOWN -> {//手指點擊螢幕
+                x1 = event.x
+                y1 = event.y
+                true
+            }
+            MotionEvent.ACTION_UP -> { //手指放開螢幕
+                x2 = event.x
+                y2 = event.y
+                var X_move = x2 - x1
+                var Y_move = y2 - y1
+                if (abs(X_move)>abs(Y_move)){//移動距離：X軸>Y軸表示左右移動
+                    if (X_move > 0){//表示向右
+                        Toast.makeText(this, "向右滑 swipe ${x1} sub ${x2} = ${X_move}", Toast.LENGTH_SHORT).show()
+                    }
+                    else{//表示向左
+                        Toast.makeText(this, "向左滑 swipe ${x1} sub ${x2} = ${X_move}", Toast.LENGTH_SHORT).show()
+                    }
+                }else{//移動距離：Y軸>X軸表示上下移動
+                    if (Y_move > 0){//表示向上
+                        Toast.makeText(this, "向下滑 swipe ${x1} sub ${x2} = ${Y_move}", Toast.LENGTH_SHORT).show()
+                    }
+                    else{//表示向下
+                        Toast.makeText(this, "向上滑 swipe ${x1} sub ${x2} = ${Y_move}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                true
+            }
+            else -> super.onTouchEvent(event)
+        }
     }
 
     override fun surfaceCreated(holder: SurfaceHolder?) {
