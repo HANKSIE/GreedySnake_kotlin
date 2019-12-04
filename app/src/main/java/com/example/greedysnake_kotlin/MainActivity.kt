@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
     var x2 :Float = 0.0f
     var y1 :Float = 0.0f
     var y2 :Float = 0.0f
+
     var touchDir = Snake.Companion.Direction.DOWN
 
     private lateinit var tileMap: TileMap
