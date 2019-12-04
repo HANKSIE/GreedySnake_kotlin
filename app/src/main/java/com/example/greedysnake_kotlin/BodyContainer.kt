@@ -12,7 +12,7 @@ class BodyContainer {
 
     companion object{
 
-        val bodys = ArrayList<Body>()
+        var bodys = ArrayList<Body>()
 
         /*新增*/
         fun add(body: Body){
@@ -27,6 +27,10 @@ class BodyContainer {
                 }
             }
             return null
+        }
+
+        fun bodysInit(): ArrayList<Body>{
+            return ArrayList<Body>()
         }
 
     }

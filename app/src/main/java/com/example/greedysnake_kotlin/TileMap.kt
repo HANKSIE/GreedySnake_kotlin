@@ -24,7 +24,6 @@ class TileMap(gridRow: Int, gridColumn: Int, tileWidth: Float, tileHeight: Float
 
     /*地圖初始化，將map裡面塞滿tile*/
     init {
-
         for (c in map.indices){
             for (r in map[c].indices){
                 map[c][r] = Tile()
@@ -46,12 +45,15 @@ class TileMap(gridRow: Int, gridColumn: Int, tileWidth: Float, tileHeight: Float
 //        Log.i("訊息 map size", "[${map.size},${map[0].size}]")
 //        Log.i("訊息 map grid", "[$gridRow,$gridColumn]")
         for (widget in body.widgets){
-            val r = widget.r
-            val c = widget.c
-            map[r][c]?.tag = widget.tag
-
+           setTileTagByGameWidget(widget)
 //            Log.i("訊息 r,c,Body", "($r,$c,${body.tag.name})")
         }
+    }
+
+    private fun setTileTagByGameWidget(widget: GameWidget){
+        val r = widget.r
+        val c = widget.c
+        map[r][c]?.tag = widget.tag
     }
 
 }

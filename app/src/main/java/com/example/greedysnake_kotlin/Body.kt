@@ -27,10 +27,6 @@ abstract class Body(tag: BodyType) {
         widgets.add(widget)
     }
 
-    fun removeWidget(gameWidget: GameWidget){
-        widgets.remove(gameWidget)
-    }
-
     fun removeAllWidget(){
         widgets = ArrayList<GameWidget>()
     }

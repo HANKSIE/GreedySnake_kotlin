@@ -8,7 +8,7 @@ class Wall(tag: Body.Companion.BodyType = Body.Companion.BodyType.WALL) : Body(t
 
     companion object{
         //初始化牆壁的靜態方法，會得到環繞地圖的牆壁
-        fun initWall(tileMap: TileMap) :Body{
+        fun initWall(tileMap: TileMap) :Wall{
             val wall = Wall()
             for (r in 0..tileMap.gridColumn-1){
                 if(r == 0 || r == tileMap.gridColumn-1){

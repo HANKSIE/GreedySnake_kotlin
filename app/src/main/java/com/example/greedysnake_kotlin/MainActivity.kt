@@ -1,16 +1,16 @@
-/*
- * 主類別
- */
-
 package com.example.greedysnake_kotlin
 
 import android.graphics.*
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import android.view.SurfaceHolder
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.MotionEventCompat
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
+import kotlin.math.abs
 
 /*
  * tileMap: 存取tileMap
@@ -20,43 +20,44 @@ import java.util.*
  * task: 進行的任務(更新畫面)
  *
  *
+ * mySnake: 玩家操做的蛇
+ * wall: 牆壁
+ * food: 食物
+ *
+ * x1,y1,x2,y2: 取得使用者點與放的座標來判斷手勢滑動方向
  *
  * 主要流程位於surfaceCreated()內
  */
 
-class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
+class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
 
-    lateinit var tileMap: TileMap
+    var x1 :Float = 0.0f
+    var x2 :Float = 0.0f
+    var y1 :Float = 0.0f
+    var y2 :Float = 0.0f
+    var touchDir = Snake.Companion.Direction.DOWN
 
-    val gridPaint = Paint().apply {
+    private lateinit var tileMap: TileMap
+    private lateinit var holder: SurfaceHolder
+
+    private val gridPaint = Paint().apply {
         color = Color.YELLOW
         strokeWidth = 2f
     }
-    val tilePaint = Paint().apply {
+
+    private val tilePaint = Paint().apply {
         color = Color.RED
     }
 
-    val timer = Timer()
-    lateinit var task: TimerTask
+    private var timer = Timer()
 
+    private lateinit var task: TimerTask
 
-    val mySnake = Snake(tag = Body.Companion.BodyType.ME, dir = Snake.Companion.Direction.DOWN).apply {
-        addWidget(SnakeWidget(1,5,Block.Companion.Type.SNAKE_HEAD))
-        addWidget(SnakeWidget(1,6,Block.Companion.Type.SNAKE_WIDGET))
-        addWidget(SnakeWidget(1,7,Block.Companion.Type.SNAKE_WIDGET))
-//        addWidget(SnakeWidget(1,8,Block.Companion.Type.SNAKE_WIDGET))
-//        addWidget(SnakeWidget(2,8,Block.Companion.Type.SNAKE_WIDGET))
-//        addWidget(SnakeWidget(3,8,Block.Companion.Type.SNAKE_WIDGET))
-//        addWidget(SnakeWidget(3,9,Block.Companion.Type.SNAKE_WIDGET))
-//        addWidget(SnakeWidget(3,10,Block.Companion.Type.SNAKE_WIDGET))
-//        addWidget(SnakeWidget(3,11,Block.Companion.Type.SNAKE_WIDGET))
-//        addWidget(SnakeWidget(2,11,Block.Companion.Type.SNAKE_WIDGET))
-//        addWidget(SnakeWidget(2,12,Block.Companion.Type.SNAKE_WIDGET))
-    }
+    private lateinit var mySnake: Snake
 
-    val food = Food().apply {
-        addWidget(GameWidget(10,5,Block.Companion.Type.FOOD))
-    }
+    private lateinit var food: Food
+
+    private lateinit var wall: Wall
 
     //--------------------------------------------------------------------------------------------------------
 
@@ -66,11 +67,87 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
         surfaceView.holder.addCallback(this)
     }
 
+    override fun onTouchEvent(event: MotionEvent): Boolean { //Mickey的傑作
+
+        val action: Int = MotionEventCompat.getActionMasked(event)
+        return when (action) {
+            MotionEvent.ACTION_DOWN -> {//手指點擊螢幕
+                x1 = event.x
+                y1 = event.y
+                true
+            }
+            MotionEvent.ACTION_UP -> { //手指放開螢幕
+                x2 = event.x
+                y2 = event.y
+                var X_move = x2 - x1
+                var Y_move = y2 - y1
+
+                if (abs(X_move)>abs(Y_move)){//移動距離：X軸>Y軸表示左右移動
+                    if (X_move > 0){//表示向右
+                        touchDir = Snake.Companion.Direction.RIGHT
+                        Toast.makeText(this, "向右滑 swipe ${x1} sub ${x2} = ${X_move}", Toast.LENGTH_SHORT).show()
+                    }
+                    else{//表示向左
+                        touchDir = Snake.Companion.Direction.LEFT
+                        Toast.makeText(this, "向左滑 swipe ${x1} sub ${x2} = ${X_move}", Toast.LENGTH_SHORT).show()
+                    }
+                }else{//移動距離：Y軸>X軸表示上下移動
+                    if (Y_move > 0){//表示向下
+                        touchDir = Snake.Companion.Direction.DOWN
+                        Toast.makeText(this, "向下滑 swipe ${x1} sub ${x2} = ${Y_move}", Toast.LENGTH_SHORT).show()
+                    }
+                    else{//表示向上
+                        touchDir = Snake.Companion.Direction.UP
+                        Toast.makeText(this, "向上滑 swipe ${x1} sub ${x2} = ${Y_move}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                true
+            }
+            else -> super.onTouchEvent(event)
+        }
+    }
+
     override fun surfaceCreated(holder: SurfaceHolder?) {
+        this.holder = holder!!
+        gameInit()
+    }
 
-        tileMap = getTileMap(holder!!)
+    override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {}
 
-        val wall = Wall.initWall(tileMap)
+    override fun surfaceDestroyed(holder: SurfaceHolder?) {}
+
+    /*遊戲初始化*/
+    private fun gameInit(){
+
+        BodyContainer.bodys = BodyContainer.bodysInit()
+
+        timer = Timer()
+        tileMap = getTileMap(holder)
+
+        mySnake = Snake(tag = Body.Companion.BodyType.ME, dir = Snake.Companion.Direction.DOWN).apply {
+            addWidget(SnakeWidget(1,5,Block.Companion.Type.SNAKE_HEAD))
+            addWidget(SnakeWidget(1,6,Block.Companion.Type.SNAKE_WIDGET))
+//        addWidget(SnakeWidget(1,7,Block.Companion.Type.SNAKE_WIDGET))
+//        addWidget(SnakeWidget(1,8,Block.Companion.Type.SNAKE_WIDGET))
+//        addWidget(SnakeWidget(2,8,Block.Companion.Type.SNAKE_WIDGET))
+//        addWidget(SnakeWidget(3,8,Block.Companion.Type.SNAKE_WIDGET))
+//        addWidget(SnakeWidget(3,9,Block.Companion.Type.SNAKE_WIDGET))
+//        addWidget(SnakeWidget(3,10,Block.Companion.Type.SNAKE_WIDGET))
+//        addWidget(SnakeWidget(3,11,Block.Companion.Type.SNAKE_WIDGET))
+//        addWidget(SnakeWidget(2,11,Block.Companion.Type.SNAKE_WIDGET))
+//        addWidget(SnakeWidget(2,12,Block.Companion.Type.SNAKE_WIDGET))
+        }
+        food = Food().apply {
+            addWidget(GameWidget(10,5,Block.Companion.Type.FOOD))
+            addWidget(GameWidget(11,5,Block.Companion.Type.FOOD))
+            addWidget(GameWidget(12,5,Block.Companion.Type.FOOD))
+            addWidget(GameWidget(13,5,Block.Companion.Type.FOOD))
+            addWidget(GameWidget(14,5,Block.Companion.Type.FOOD))
+            addWidget(GameWidget(15,5,Block.Companion.Type.FOOD))
+        }
+        wall = Wall.initWall(tileMap)
+//        wall.addWidget(GameWidget(50,5,Block.Companion.Type.WALL))
+
         BodyContainer.add(mySnake)
         BodyContainer.add(food)
         BodyContainer.add(wall)
@@ -78,6 +155,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
         task = object: TimerTask() {
             override fun run() {
                 tileMap.init() //清除地圖
+                mySnake.dir = getDir(mySnake, touchDir)
                 setBodys2tileMap() //將身體元件放入地圖
                 draw(holder) //依據地圖資料畫圖
                 update() //更新Body資料
@@ -85,15 +163,68 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
         }
 
         gameStart()
+    }
+
+    private fun getDir(snake: Snake, touchDir: Snake.Companion.Direction): Snake.Companion.Direction{
+
+        val snakeDir = snake.dir
+        val dirSolve = when(snakeDir){
+            Snake.Companion.Direction.UP->{
+                if (snake.widgets.size > 0){
+                    if (touchDir == Snake.Companion.Direction.DOWN){
+                        snakeDir
+                    }else{
+                        touchDir
+                    }
+                }else{
+                    snakeDir
+                }
+            }
+            Snake.Companion.Direction.DOWN->{
+                if (snake.widgets.size > 0){
+                    if (touchDir == Snake.Companion.Direction.UP){
+                        snakeDir
+                    }else{
+                        touchDir
+                    }
+                }else{
+                    snakeDir
+                }
+            }
+            Snake.Companion.Direction.LEFT->{
+                if (snake.widgets.size > 0){
+                    if (touchDir == Snake.Companion.Direction.RIGHT){
+                        snakeDir
+                    }else{
+                        touchDir
+                    }
+                }else{
+                    snakeDir
+                }
+            }
+            Snake.Companion.Direction.RIGHT->{
+                if (snake.widgets.size > 0){
+                    if (touchDir == Snake.Companion.Direction.LEFT){
+                        snakeDir
+                    }else{
+                        touchDir
+                    }
+                }else{
+                    snakeDir
+                }
+            }
+            else -> {
+                //因為規定要填else，所以隨便填個方向
+                snakeDir
+            }
+        }
+
+        return dirSolve
 
     }
 
-    override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {}
-
-    override fun surfaceDestroyed(holder: SurfaceHolder?) {}
-
     /*取得tileMap*/
-    fun getTileMap(holder: SurfaceHolder?, gridRow: Int = 15, gridColumn: Int = 20): TileMap {
+    private fun getTileMap(holder: SurfaceHolder?, gridRow: Int = 30, gridColumn: Int = 40): TileMap {
 
         val canvas = holder!!.lockCanvas()
         val screenWidth = canvas.width
@@ -121,15 +252,15 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
     }
 
     /*繪圖*/
-    fun draw(holder: SurfaceHolder){
+    private fun draw(holder: SurfaceHolder){
         val canvas = holder.lockCanvas()
         drawTileMap(canvas)
-        drawGridLine(canvas)
+//        drawGridLine(canvas)
         holder.unlockCanvasAndPost(canvas)
     }
 
     /*畫格線*/
-    fun drawGridLine(canvas: Canvas) {
+    private fun drawGridLine(canvas: Canvas) {
 
         val screenWidth = canvas.width.toFloat()
         val screenHeight = canvas.height.toFloat()
@@ -151,7 +282,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
     }
 
     /*畫地圖*/
-    fun drawTileMap(canvas: Canvas){
+    private fun drawTileMap(canvas: Canvas){
 
         tileMap.map.iterator().forEach {
             it.iterator().forEach {
@@ -167,7 +298,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
     }
 
     /*取得畫元件對應的顏色*/
-    fun getColor(tag: Block.Companion.Type) =  when(tag){
+    private fun getColor(tag: Block.Companion.Type) =  when(tag){
         Block.Companion.Type.WALL -> Color.GRAY
         Block.Companion.Type.SNAKE_HEAD -> Color.RED
         Block.Companion.Type.SNAKE_WIDGET -> Color.WHITE
@@ -177,9 +308,10 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
         }
     }
 
-    /*更新*/
-    fun update(){
+    /*資料更新(Body們的資料)*/
+    private fun update(){
 
+        /*走訪所有的Body，如果是可移動的(ME, ENEMY)就移動*/
         BodyContainer.bodys.iterator().forEach {
             when(it.tag){
                 Body.Companion.BodyType.ME, Body.Companion.BodyType.ENEMY-> {
@@ -188,28 +320,12 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
             }
         }
 
-
-        var myHead = getHead(mySnake)
-        if (isCollision(myHead)){
-
-            when(getCollisionType(myHead)){
-                Block.Companion.Type.FOOD -> {
-                    val last = mySnake.widgets.last() as SnakeWidget
-                    mySnake.addWidget(SnakeWidget(last.preR, last.preC, Block.Companion.Type.SNAKE_WIDGET))
-                    food.removeAllWidget()
-                }
-                Block.Companion.Type.WALL -> {
-                    gameStop()
-                }
-            }
-
-
-        }
+        collisionSolve()
 
     }
 
     /*移動snake中的widget位置*/
-    fun move(snake: Snake){
+    private fun move(snake: Snake){
 
         val head = getHead(snake)
 
@@ -253,48 +369,132 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
     }
 
     /*將每個Body設置到地圖上*/
-    fun setBodys2tileMap(){
+    private fun setBodys2tileMap(){
         for (body in BodyContainer.bodys){
             tileMap.setTileTagByBody(body)
         }
     }
 
     /*取得蛇的頭部*/
-    fun getHead(snake: Snake): SnakeWidget{
-        val myHead = snake.findWidgetByTag(snake , Block.Companion.Type.SNAKE_HEAD)
-        return myHead as SnakeWidget
+    private fun getHead(snake: Snake): SnakeWidget{
+        val head = snake.findWidgetByTag(snake , Block.Companion.Type.SNAKE_HEAD)
+        return head as SnakeWidget
+    }
+
+    /*隨機生成food*/
+    private fun generateFood(tileMap: TileMap): Boolean{
+
+        val canSetFoodArr = getCanSetFoodArr(tileMap)
+        if (canSetFoodArr.size > 0){
+            val result = canSetFoodArr.random()
+            food.addWidget(result)
+            //Log.i("RESULT", "${result.r}, ${result.c}")
+            return true
+        }else{
+            return false
+        }
+
+    }
+
+    /*隨機生成多個food*/
+    private fun generateMuitipleFoods(tileMap: TileMap, amount: Int): Boolean{
+
+        var isAllSuccess = false
+        var flag = true
+
+        for (count in 1..amount){
+            if(!generateFood(tileMap)){
+                flag = false
+            }
+            if (count == amount){
+                isAllSuccess = flag
+            }
+        }
+
+        return isAllSuccess
+
+    }
+
+    /*取得可以設定food的位置(以新產生的GameWidget回傳位置)*/
+    private fun getCanSetFoodArr(tileMap: TileMap): ArrayList<GameWidget>{
+        val map = tileMap.map
+        val canSetFoodArr = ArrayList<GameWidget>()
+        for (r in map.indices){
+            for (c in map[r].indices){
+                if (map[r][c]?.tag == Block.Companion.Type.UNDEFINED){
+                    canSetFoodArr.add(GameWidget(r,c,Block.Companion.Type.FOOD))
+                }
+            }
+        }
+        return canSetFoodArr
+    }
+
+    /*碰撞後的處理*/
+    private fun collisionSolve(){
+        var myHead = getHead(mySnake)
+        if (isCollision(myHead)){
+            Log.e("碰撞發生!!!，碰撞類型",getCollisionType(myHead)?.name.toString())
+            when(getCollisionType(myHead)){
+                Block.Companion.Type.FOOD -> {
+                    val last = mySnake.widgets.last() as SnakeWidget
+                    mySnake.addWidget(SnakeWidget(last.preR, last.preC, Block.Companion.Type.SNAKE_WIDGET))
+                    food.removeWidget(getCollision_R_C(myHead))
+                    generateMuitipleFoods(tileMap,1)
+                }
+                Block.Companion.Type.WALL, Block.Companion.Type.SNAKE_WIDGET -> {
+                    gameRestart()
+                }
+            }
+        }
     }
 
     /*碰撞檢測*/
-    fun isCollision(myHead: GameWidget): Boolean{
+    private fun isCollision(myHead: GameWidget): Boolean{
         val r = myHead.r
         val c = myHead.c
-        val flag = (tileMap.map[r][c]?.tag == Block.Companion.Type.WALL || tileMap.map[r][c]?.tag == Block.Companion.Type.FOOD)
+        val flag = (tileMap.map[r][c]?.tag == Block.Companion.Type.WALL ||
+                tileMap.map[r][c]?.tag == Block.Companion.Type.FOOD ||
+                tileMap.map[r][c]?.tag == Block.Companion.Type.SNAKE_WIDGET)
 
         return flag
     }
 
-    /*取得碰撞類型*/
-    fun getCollisionType(myHead: GameWidget): Block.Companion.Type?{
-        val r = myHead.r
-        val c = myHead.c
+    /*取得和元件碰撞的元件的類型*/
+    private fun getCollisionType(widget: GameWidget): Block.Companion.Type?{
+        val r = widget.r
+        val c = widget.c
         val tag = tileMap.map[r][c]?.tag
 
         return tag
     }
 
+    /*取得和元件碰撞的元件的Row和Column*/
+    private fun getCollision_R_C(widget: GameWidget): Map<String, Int>{
+        val r = widget.r
+        val c = widget.c
+        val result = mapOf(Pair("r",r), Pair("c",c))
+
+        return result
+    }
+
     /*遊戲開始*/
-    fun gameStart(){
+    private fun gameStart(){
         timer.schedule(task, 0, 100)
     }
 
+    /*遊戲重新開始*/
+    private fun gameRestart(){
+        gameStop()
+        gameInit()
+    }
+
     /*遊戲停止*/
-    fun gameStop(){
+    private fun gameStop(){
         task.cancel()
     }
 
     /*調整Bitmap比例*/
-    fun adjustBitmap(bitmap: Bitmap, scale: Float) : Bitmap {
+    private fun adjustBitmap(bitmap: Bitmap, scale: Float) : Bitmap {
         val width = bitmap.width
         val height = bitmap.height
         val mat = Matrix()
@@ -302,5 +502,6 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback{
 
         return Bitmap.createBitmap(bitmap,0,0,width,height,mat,true)
     }
+
 
 }
