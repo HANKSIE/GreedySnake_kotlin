@@ -7,26 +7,27 @@ package com.example.greedysnake_kotlin
 import android.util.Log
 
 /*
- * gridColumn: 橫向格子數量
- * gridRow: 縱向格子數量
+ * gridRow: 橫向格子數量
+ * gridColumn: 縱向格子數量
  * tileWidth: 地圖元素單位寬
  * tileHeight: 地圖元素單位高
  * map: 存處地圖元素的二維陣列
  */
 
-class TileMap(gridColumn: Int, gridRow: Int, tileWidth: Float, tileHeight: Float){
+class TileMap(gridRow: Int, gridColumn: Int, tileWidth: Float, tileHeight: Float){
 
-    val gridColumn = gridColumn
     val gridRow = gridRow
+    val gridColumn = gridColumn
     val tileWidth = tileWidth
     val tileHeight = tileHeight
     val map = Array(gridColumn, {arrayOfNulls<Tile>(gridRow)})
 
     /*地圖初始化，將map裡面塞滿tile*/
     init {
-        for (i in map.indices){
-            for (j in map[i].indices){
-                map[i][j] = Tile()
+
+        for (c in map.indices){
+            for (r in map[c].indices){
+                map[c][r] = Tile()
             }
         }
     }
@@ -42,24 +43,14 @@ class TileMap(gridColumn: Int, gridRow: Int, tileWidth: Float, tileHeight: Float
 
     /*將Body的GameWidget.tag到相對應的map位置*/
     fun setTileTagByBody(body: Body){
+//        Log.i("訊息 map size", "[${map.size},${map[0].size}]")
+//        Log.i("訊息 map grid", "[$gridRow,$gridColumn]")
         for (widget in body.widgets){
-            val x = widget.x
-            val y = widget.y
-            map[y][x]?.tag = widget.tag
-            Log.i("訊息 物件", widget.tag.toString())
-            Log.i("訊息 x", x.toString())
-            Log.i("訊息 y", y.toString())
-            Log.i("訊息 px", map[x][y]?.positionX.toString())
-            Log.i("訊息 py", map[x][y]?.positionY.toString())
-        }
-    }
+            val r = widget.r
+            val c = widget.c
+            map[r][c]?.tag = widget.tag
 
-    fun showAllTilesInfo(){
-        map.iterator().forEach {
-            it.iterator().forEach {
-                Log.e("Tile positionX", it?.positionX.toString())
-                Log.e("Tile positionY", it?.positionY.toString())
-            }
+//            Log.i("訊息 r,c,Body", "($r,$c,${body.tag.name})")
         }
     }
 

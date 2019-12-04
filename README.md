@@ -2,52 +2,30 @@
 使用kotlin撰寫的android貪食蛇
 
 
+---
+#基本物件說明
+<br>
+<br>
+![image](https://github.com/HANKSIE/GreedySnake_kotlin/blob/3d68fe137330e328e51cea375932b2f3d5d7e004/%E5%9F%BA%E6%9C%AC%E7%89%A9%E4%BB%B6%E8%AA%AA%E6%98%8E.png)
 
-| Class| Describtion|extends/Implement|
-| ---- | ---------- | --------------- |
-|MainActivity|主要類別|AppCompatActivity, SurfaceHolder.Callback|
-|BodyContainer|乘載所有遊戲物件的容器||
-|SnakeWidget|Snake的組件|GameWidget|
-|Snake|蛇|Body|
-|WallWidget|Wall的組件|GameWidget|
-|Wall|牆壁|Body|
-|Tile| 儲存canvas繪圖用的資訊|Block|
-|TileMap|地圖||
+!!!設定GameWidget時要注意是否在map的範圍內，超出會報錯!!!
+
+---
+#流程
+
+loop{<br>
+<br>
+1.將TileMap.map中所有的tile.tag初始化<br>
+2.利用GameWidget的r,c設定到TileMap.map[r][c].tag(Tile.tag)<br>
+3.利用TileMap.map上的positionX,positionY以及tag劃出相對應物件<br>
+4.更新所有body的資料(r,c)<br>
+<br>
+}<br>
 
 <br>
 <br>
 
-|Abstract Class|Describtion|extends/Implement|
-| ---- | ---------- | --------------- |
-|GameWidget|Body組件|Block|
-|Body|遊戲物件||
-
-<br>
-<br>
-
-|Interface|Describtion|extends/Implement|
-| ---- | ---------- | --------------- |
-|Block|定義基本元素||
 
 
 
-```
-                                                  
-                         Block                       
-                           |                      
-               -----------------------            
-               |                     |            
-          GameWidget               Tile           
-               |                                  
-     -------------------                          
-     |                 |                          
-   SnakeWidget    WallWidget                      
 
-
-
-              Body                                 
-               |                                  
-        ----------------                            
-        |              |                            
-      Snake           Wall                          
-```                                                  
