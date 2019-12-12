@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
     private lateinit var holder: SurfaceHolder
 
     private val gridPaint = Paint().apply {
-        color = Color.YELLOW
+        color = Color.WHITE
         strokeWidth = 2f
     }
 
@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
 
         val action: Int = MotionEventCompat.getActionMasked(event)
         return when (action) {
-            MotionEvent.ACTION_DOWN -> {//手指點擊螢幕
+            MotionEvent.ACTION_DOWN -> {//swd
                 x1 = event.x
                 y1 = event.y
                 true
@@ -225,7 +225,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
     }
 
     /*取得tileMap*/
-    private fun getTileMap(holder: SurfaceHolder?, gridRow: Int = 30, gridColumn: Int = 40): TileMap {
+    private fun getTileMap(holder: SurfaceHolder?, gridRow: Int = 20, gridColumn: Int = 40): TileMap {
 
         val canvas = holder!!.lockCanvas()
         val screenWidth = canvas.width
@@ -256,7 +256,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
     private fun draw(holder: SurfaceHolder){
         val canvas = holder.lockCanvas()
         drawTileMap(canvas)
-//        drawGridLine(canvas)
+        drawGridLine(canvas)
         holder.unlockCanvasAndPost(canvas)
     }
 
