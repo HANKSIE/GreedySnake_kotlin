@@ -7,25 +7,44 @@
     tools:context=".title.Title">
 
     <ImageView
+        android:id="@+id/title_image"
+        android:layout_width="350dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_launcher_background" />
+
+    <ImageView
         android:id="@+id/changeModeL_image"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        app:layout_constraintBottom_toBottomOf="@+id/mode_button"
-        app:layout_constraintEnd_toStartOf="@+id/mode_button"
+        app:layout_constraintBottom_toBottomOf="@+id/mode_image"
+        app:layout_constraintEnd_toStartOf="@+id/mode_image"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/mode_button"
+        app:layout_constraintTop_toTopOf="@+id/mode_image"
         app:srcCompat="@android:drawable/ic_media_play" />
 
-    <ImageButton
-        android:id="@+id/mode_button"
+    <ImageView
+        android:id="@+id/changeModeR_image"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        app:layout_constraintBottom_toBottomOf="@+id/mode_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/mode_image"
+        app:layout_constraintTop_toTopOf="@+id/mode_image"
+        app:srcCompat="@android:drawable/arrow_up_float" />
+
+    <ImageView
+        android:id="@+id/mode_image"
         android:layout_width="220dp"
         android:layout_height="60dp"
         android:layout_marginTop="30dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title_image"
-        app:srcCompat="@android:drawable/checkbox_off_background" />
+        app:srcCompat="@android:drawable/progress_horizontal" />
 
     <ImageButton
         android:id="@+id/start_button"
@@ -33,9 +52,8 @@
         android:layout_height="60dp"
         app:layout_constraintBottom_toTopOf="@+id/help_button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mode_button"
+        app:layout_constraintTop_toBottomOf="@+id/mode_image"
         app:srcCompat="@android:drawable/checkbox_off_background" />
 
     <ImageButton
@@ -45,28 +63,7 @@
         android:layout_marginBottom="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@android:drawable/checkbox_off_background" />
-
-    <ImageView
-        android:id="@+id/changeModeR_image"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        app:layout_constraintBottom_toBottomOf="@+id/mode_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/mode_button"
-        app:layout_constraintTop_toTopOf="@+id/mode_button"
-        app:srcCompat="@android:drawable/arrow_up_float" />
-
-    <ImageView
-        android:id="@+id/title_image"
-        android:layout_width="350dp"
-        android:layout_height="250dp"
-        android:layout_marginTop="30dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_launcher_background" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
