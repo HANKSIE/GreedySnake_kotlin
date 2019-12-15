@@ -5,79 +5,81 @@
     android:id="@+id/title_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     tools:context=".title.Title">
 
     <ImageView
         android:id="@+id/title_image"
-        android:layout_width="350dp"
+        android:layout_width="300dp"
         android:layout_height="250dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="90dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_launcher_background" />
-
-    <ImageView
-        android:id="@+id/changeModeL_image"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        app:layout_constraintBottom_toBottomOf="@+id/mode_image"
-        app:layout_constraintEnd_toStartOf="@+id/mode_image"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/mode_image"
-        app:srcCompat="@android:drawable/ic_media_play" />
-
-    <ImageView
-        android:id="@+id/changeModeR_image"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        app:layout_constraintBottom_toBottomOf="@+id/mode_image"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/mode_image"
-        app:layout_constraintTop_toTopOf="@+id/mode_image"
-        app:srcCompat="@android:drawable/arrow_up_float" />
-
-    <ImageView
-        android:id="@+id/mode_image"
-        android:layout_width="220dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="30dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title_image"
-        app:srcCompat="@android:drawable/progress_horizontal" />
+        app:srcCompat="@drawable/ic_title_title_image"
+        android:contentDescription="@string/title_Description" />
 
     <ImageButton
         android:id="@+id/start_button"
-        android:layout_width="220dp"
-        android:layout_height="60dp"
+        android:layout_width="160dp"
+        android:layout_height="50dp"
+        android:background="@null"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toTopOf="@+id/help_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mode_image"
-        app:srcCompat="@android:drawable/checkbox_off_background" />
+        app:layout_constraintTop_toBottomOf="@+id/mode_background"
+        app:srcCompat="@drawable/ic_title_button_start"
+        android:contentDescription="@string/start_Description" />
 
     <ImageButton
         android:id="@+id/help_button"
-        android:layout_width="220dp"
-        android:layout_height="60dp"
-        android:layout_marginBottom="30dp"
+        android:layout_width="160dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="130dp"
+        android:background="@null"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@android:drawable/checkbox_off_background" />
+        app:srcCompat="@drawable/ic_title_button_help"
+        android:contentDescription="@string/help_Description" />
 
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/help_pager"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="32dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <ImageButton
+        android:id="@+id/setting_button"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@null"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_title_button_setting"
+        android:contentDescription="@string/setting_Description" />
+
+    <ImageView
+        android:id="@+id/mode_background"
+        android:layout_width="200dp"
+        android:layout_height="45dp"
+        android:contentDescription="@string/modeBackground_Description"
+        android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/title_image"
+        app:srcCompat="@drawable/ic_title_button_white" />
+
+    <ImageButton
+        android:id="@+id/mode_button"
+        android:layout_width="160dp"
+        android:layout_height="30dp"
+        android:background="@null"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="@+id/mode_background"
+        app:layout_constraintEnd_toEndOf="@+id/mode_background"
+        app:layout_constraintStart_toStartOf="@+id/mode_background"
+        app:layout_constraintTop_toTopOf="@+id/mode_background"
+        app:srcCompat="@drawable/ic_title_mode_limited"
+        android:contentDescription="@string/mode_Description" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
