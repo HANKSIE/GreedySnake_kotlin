@@ -25,7 +25,7 @@ class Title : AppCompatActivity() {
 
         // 模式按鈕
         mode_button.setOnClickListener {
-            btnModeSet(modeIndex)
+            btnModeSet()
         }
 
         // 開始按鈕
@@ -42,19 +42,17 @@ class Title : AppCompatActivity() {
     }
 
     // 切換模式
-    private fun btnModeSet(modeIndex: Int) : Int {
+    private fun btnModeSet() {
         var index = modeIndex
-//        index = if (index+1 == 3) { 0 } else { index+1 }
-        index += 1
-        Log.d("TAG", "WTF")
+        index = if (index+1 == 3) { 0 } else { index+1 }
 
-        Log.d("TAG", index.toString())
         when (index) {
             0 -> {mode_button.setImageResource(R.drawable.ic_title_mode_limited); mode_background.setImageResource(R.drawable.ic_title_button_white)}
             1 -> {mode_button.setImageResource(R.drawable.ic_title_mode_unlimited); mode_background.setImageResource(R.drawable.ic_title_button_blue)}
             2 -> {mode_button.setImageResource(R.drawable.ic_title_mode_props); mode_background.setImageResource(R.drawable.ic_title_button_yellow)}
         }
-        return index
+
+        modeIndex = index
     }
 
     // 開始
