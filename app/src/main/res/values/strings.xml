@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">GreedySnake_kotlin</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_Description">Title</string>
+    <string name="start_Description">start</string>
+    <string name="help_Description">Help</string>
+    <string name="setting_Description">Setting</string>
+    <string name="modeBackground_Description">ModeBackground</string>
+    <string name="mode_Description">Mode</string>
 </resources>
