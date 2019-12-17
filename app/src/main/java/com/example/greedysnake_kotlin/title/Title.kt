@@ -60,7 +60,8 @@ class Title : AppCompatActivity() {
         Log.d("TAG", mode[modeIndex])
         val startIntent = Intent(this, MainActivity::class.java)
         startIntent.putExtra("mode", mode[modeIndex])
-        startActivity(startIntent)
+//        startActivity(startIntent)
+        startActivityForResult(startIntent,1)
     }
 
     // 說明
