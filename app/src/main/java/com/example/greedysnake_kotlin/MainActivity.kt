@@ -147,7 +147,30 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
             addWidget(GameWidget(15,5,Block.Companion.Type.FOOD))
         }
         wall = Wall.initWall(tileMap)
+
+        h(wall, 2, 19,23)
+        v(wall, 21, 3,4)
+        h(wall, 5, 19,23)
+
+        h(wall, 7, 19,23)
+        v(wall, 19, 8,10)
+        v(wall, 21, 8,10)
+        v(wall, 23, 8,10)
+
+        h(wall, 12, 19,23)
+        v(wall, 23, 13,15)
+
+        h(wall, 17, 19,23)
+        v(wall, 23, 18,19)
+
+        h(wall, 21, 19,23)
+        h(wall, 24, 19,23)
+        v(wall, 19, 22,23)
+        v(wall, 23, 22,23)
+
 //        wall.addWidget(GameWidget(50,5,Block.Companion.Type.WALL))
+
+
 
         BodyContainer.add(mySnake)
         BodyContainer.add(food)
@@ -164,6 +187,26 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
         }
 
         gameStart()
+    }
+
+    fun v(body: Body, R: Int,C_start: Int, C_end: Int){
+
+        body.apply {
+            for (c in C_start..C_end){
+                addWidget(GameWidget(R ,c,Block.Companion.Type.WALL))
+            }
+        }
+
+    }
+
+    fun h(body: Body, C: Int,R_start: Int, R_end: Int){
+
+        body.apply {
+            for (r in R_start..R_end){
+                addWidget(GameWidget(r ,C,Block.Companion.Type.WALL))
+            }
+        }
+
     }
 
     private fun getDir(snake: Snake, touchDir: Snake.Companion.Direction): Snake.Companion.Direction{
@@ -256,7 +299,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
     private fun draw(holder: SurfaceHolder){
         val canvas = holder.lockCanvas()
         drawTileMap(canvas)
-//        drawGridLine(canvas)
+        drawGridLine(canvas)
         holder.unlockCanvasAndPost(canvas)
     }
 
