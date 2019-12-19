@@ -1,9 +1,15 @@
 package com.example.greedysnake_kotlin.title
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.transition.TransitionManager
 import android.util.Log
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.greedysnake_kotlin.MainActivity
 import com.example.greedysnake_kotlin.R
 import kotlinx.android.synthetic.main.activity_title.*
@@ -67,7 +73,56 @@ class Title : AppCompatActivity() {
     // 說明
     private fun btnHelpSet() {
 
+        // region set and call help popupWindow
+
+        val inflater: LayoutInflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+
+        val view = inflater.inflate(R.layout.help_view, null)
+
+        val popupWindow = PopupWindow(
+            view,
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.MATCH_PARENT
+        )
+
+        // region set in help window detail
+
+        val outside = view.findViewById<ConstraintLayout>(R.id.help_layout)
+        val picture = view.findViewById<TextView>(R.id.helpContent)
+        val leftButton = view.findViewById<ImageButton>(R.id.leftButton)
+        val rightButton = view.findViewById<ImageButton>(R.id.rightButton)
+
+        // 點擊幫助視窗外面
+        outside.setOnClickListener {
+            popupWindow.dismiss()
+        }
+
+        // 幫助左側按鈕
+        leftButton.setOnClickListener {
+//            leftButton.setImageResource(R.drawable.ic_launcher_background)
+        }
+
+        // 幫助右側按鈕
+        rightButton.setOnClickListener {
+//            rightButton.setImageResource(R.drawable.ic_launcher_foreground)
+        }
+
+        // endregion
+
+        // 當 PopupWindow 結束的提示語
+        popupWindow.setOnDismissListener {
+            Toast.makeText(applicationContext, "Popup closed", Toast.LENGTH_SHORT).show()
+        }
+
+        TransitionManager.beginDelayedTransition(title_layout)
+
+        // 顯示
+        popupWindow.showAtLocation(
+            title_layout,
+            Gravity.CENTER,
+            0,
+            0)
+
+        // endregion
     }
-
-
 }

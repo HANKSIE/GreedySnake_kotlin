@@ -42,6 +42,8 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
     private lateinit var tileMap: TileMap
     private lateinit var holder: SurfaceHolder
 
+    private var test = true
+
     private val gridPaint = Paint().apply {
         color = Color.WHITE
         strokeWidth = 2f
@@ -144,7 +146,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
 
         game = object: AsyncTask<Void, Void, Boolean>(){
             override fun doInBackground(vararg p0: Void?): Boolean {
-                while (!isCancelled){
+                while (!isCancelled && test){
                     try {
                         tileMap.init() //清除地圖
                         Thread.sleep(80)
