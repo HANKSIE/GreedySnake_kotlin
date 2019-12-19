@@ -13,37 +13,39 @@
         android:layout_width="300dp"
         android:layout_height="250dp"
         android:layout_marginTop="90dp"
+        android:contentDescription="@string/title_Description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_title_title_image"
-        android:contentDescription="@string/title_Description" />
+        app:srcCompat="@drawable/ic_title_title_image" />
 
     <ImageButton
         android:id="@+id/start_button"
         android:layout_width="160dp"
         android:layout_height="50dp"
         android:background="@null"
+        android:contentDescription="@string/start_Description"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toTopOf="@+id/help_button"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mode_background"
-        app:srcCompat="@drawable/ic_title_button_start"
-        android:contentDescription="@string/start_Description" />
+        app:srcCompat="@drawable/ic_title_button_start" />
 
     <ImageButton
         android:id="@+id/help_button"
         android:layout_width="160dp"
         android:layout_height="50dp"
-        android:layout_marginBottom="130dp"
         android:background="@null"
+        android:contentDescription="@string/help_Description"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/ic_title_button_help"
-        android:contentDescription="@string/help_Description" />
+        app:layout_constraintTop_toBottomOf="@+id/start_button"
+        app:srcCompat="@drawable/ic_title_button_help" />
 
     <ImageButton
         android:id="@+id/setting_button"
@@ -52,11 +54,11 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:background="@null"
+        android:contentDescription="@string/setting_Description"
         android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_title_button_setting"
-        android:contentDescription="@string/setting_Description" />
+        app:srcCompat="@drawable/ic_title_button_setting" />
 
     <ImageView
         android:id="@+id/mode_background"
@@ -74,12 +76,12 @@
         android:layout_width="160dp"
         android:layout_height="30dp"
         android:background="@null"
+        android:contentDescription="@string/mode_Description"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="@+id/mode_background"
         app:layout_constraintEnd_toEndOf="@+id/mode_background"
         app:layout_constraintStart_toStartOf="@+id/mode_background"
         app:layout_constraintTop_toTopOf="@+id/mode_background"
-        app:srcCompat="@drawable/ic_title_mode_limited"
-        android:contentDescription="@string/mode_Description" />
+        app:srcCompat="@drawable/ic_title_mode_limited" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
