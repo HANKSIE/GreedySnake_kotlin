@@ -1,6 +1,7 @@
 package com.example.greedysnake_kotlin.title
 
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,10 +10,12 @@ import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.greedysnake_kotlin.MainActivity
 import com.example.greedysnake_kotlin.R
 import kotlinx.android.synthetic.main.activity_title.*
+import kotlin.system.exitProcess
 
 class Title : AppCompatActivity() {
 
@@ -20,6 +23,7 @@ class Title : AppCompatActivity() {
 
     private var modeIndex = 0
     private var mode = listOf("normal", "unlimited", "prop")
+    private var lastTime: Long = 0
 
     // endregion
 
@@ -45,6 +49,35 @@ class Title : AppCompatActivity() {
         }
 
         // endregion
+    }
+
+    // 返回鍵
+    override fun onBackPressed() {
+
+        val currentTime = System.currentTimeMillis()
+
+        if (currentTime - lastTime > 3* 1000) {
+            lastTime = currentTime
+            Toast.makeText(this, "再點一次以離開", Toast.LENGTH_SHORT).show()
+        } else {
+            super.finish()
+        }
+
+        // region alert example
+//        val builder = AlertDialog.Builder(this)
+//        builder.setTitle("離開")
+//        builder.setMessage("你確定要離開嗎")
+//
+//        builder.setNegativeButton("NO") { _, _ ->
+//            Toast.makeText(applicationContext, "Comeback", Toast.LENGTH_LONG).show()
+//        }
+//        builder.setPositiveButton("OK") { _, _ ->
+//            exitProcess(-1)
+//        }
+//
+//        builder.show()
+
+        //endregion
     }
 
     // 切換模式
@@ -89,22 +122,10 @@ class Title : AppCompatActivity() {
 
         val outside = view.findViewById<ConstraintLayout>(R.id.help_layout)
         val picture = view.findViewById<TextView>(R.id.helpContent)
-        val leftButton = view.findViewById<ImageButton>(R.id.leftButton)
-        val rightButton = view.findViewById<ImageButton>(R.id.rightButton)
 
         // 點擊幫助視窗外面
         outside.setOnClickListener {
             popupWindow.dismiss()
-        }
-
-        // 幫助左側按鈕
-        leftButton.setOnClickListener {
-//            leftButton.setImageResource(R.drawable.ic_launcher_background)
-        }
-
-        // 幫助右側按鈕
-        rightButton.setOnClickListener {
-//            rightButton.setImageResource(R.drawable.ic_launcher_foreground)
         }
 
         // endregion
