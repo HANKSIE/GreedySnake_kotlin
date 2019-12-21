@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MotionEventCompat
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.Exception
-import java.util.*
 import kotlin.math.abs
 import java.lang.Thread as Thread
 
@@ -46,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         private var x2 :Float = 0.0f
         private var y1 :Float = 0.0f
         private var y2 :Float = 0.0f
-        private val timer = Timer()
+        private var mode = 0
         private var touchDir = Snake.Companion.Direction.DOWN
 
         private lateinit var tileMap: TileMap
@@ -75,6 +74,13 @@ class MainActivity : AppCompatActivity() {
         //--------------------------------------------------------------------------------------------------------
 
         init {
+            intent?.extras?.let {
+                mode = it.getInt("mode")
+                when(mode){
+                    0->time=60
+                    1->time=0
+                }
+            }
             surfaceView.holder.addCallback(this)
 
             surfaceView.setOnTouchListener { v, event ->
@@ -141,9 +147,15 @@ class MainActivity : AppCompatActivity() {
                 override fun doInBackground(vararg p0: Void?): Boolean {
                     while (!isCancelled) {
                         try {
-                            time+=1
+                            when(mode){
+                                0->time-=1
+                                1->time+=1
+                            }
                             setTimetext()
                             Thread.sleep(1000)
+                            if (time<=0){
+                                gameOver()
+                            }
                         } catch (e: InterruptedException) {
                             e.printStackTrace()
                         } catch (e: Exception) {

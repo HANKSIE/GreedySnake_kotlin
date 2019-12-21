@@ -98,7 +98,7 @@ class Title : AppCompatActivity() {
     private fun btnStartSet() {
         Log.d("TAG", mode[modeIndex])
         val startIntent = Intent(this, MainActivity::class.java)
-        startIntent.putExtra("mode", mode[modeIndex])
+        startIntent.putExtra("mode", modeIndex)
 //        startActivity(startIntent)
         startActivityForResult(startIntent,1)
     }
