@@ -1,6 +1,7 @@
 package com.example.greedysnake_kotlin
 
 
+import android.app.AlertDialog
 import android.graphics.*
 import android.os.AsyncTask
 import android.os.Bundle
@@ -32,10 +33,12 @@ import java.lang.Thread as Thread
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var mainGame: Game
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Game(surfaceView)
+        mainGame = Game(surfaceView)
     }
 
     inner class Game(surfaceView: SurfaceView): SurfaceHolder.Callback{
@@ -404,6 +407,17 @@ class MainActivity : AppCompatActivity() {
             finish()
         }
 
+        // 遊戲暫停
+        fun gamePause() {
+            gameStop()
+        }
+
+        // 遊戲繼續
+        fun gameResume() {
+            resetAsyncTask()
+            gameStart()
+        }
+
         /*調整Bitmap比例*/
         private fun adjustBitmap(bitmap: Bitmap, scale: Float) : Bitmap {
             val width = bitmap.width
@@ -413,9 +427,29 @@ class MainActivity : AppCompatActivity() {
 
             return Bitmap.createBitmap(bitmap,0,0,width,height,mat,true)
         }
+
+        /*設置分數*/
         private fun setTimetext(){
             timeText.text = "time:" + (time/60).toString() + ":" + (time%60).toString()
         }
+    }
+
+    // 返回鍵
+    override fun onBackPressed() {
+        mainGame.gamePause()
+
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("暫停")
+        builder.setMessage("你這麼想要暫緩嗎")
+
+        builder.setNegativeButton("離開遊戲") { _, _ ->
+            super.finish()
+        }
+        builder.setPositiveButton("繼續") { _, _ ->
+            mainGame.gameResume()
+        }
+
+        builder.show()
     }
 }
 
