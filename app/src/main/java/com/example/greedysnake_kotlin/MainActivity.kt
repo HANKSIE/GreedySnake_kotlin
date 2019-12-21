@@ -1,7 +1,6 @@
 package com.example.greedysnake_kotlin
 
-import android.app.Activity
-import android.content.Intent
+
 import android.graphics.*
 import android.os.AsyncTask
 import android.os.Bundle
@@ -9,11 +8,11 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MotionEventCompat
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.Exception
+import java.util.*
 import kotlin.math.abs
 import java.lang.Thread as Thread
 
@@ -41,12 +40,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     inner class Game(surfaceView: SurfaceView): SurfaceHolder.Callback{
-
+        private var score :Int = 0
+        private var time :Int = 0
         private var x1 :Float = 0.0f
         private var x2 :Float = 0.0f
         private var y1 :Float = 0.0f
         private var y2 :Float = 0.0f
-
+        private val timer = Timer()
         private var touchDir = Snake.Companion.Direction.DOWN
 
         private lateinit var tileMap: TileMap
@@ -70,6 +70,8 @@ class MainActivity : AppCompatActivity() {
         private lateinit var wall: Wall
 
         private lateinit var game: AsyncTask<Void, Void, Boolean>
+        private lateinit var gametime: AsyncTask<Void, Void, Boolean>
+
         //--------------------------------------------------------------------------------------------------------
 
         init {
@@ -115,10 +117,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        private fun resetAsyncTask(){
-            game = object: AsyncTask<Void, Void, Boolean>(){
+        private fun resetAsyncTask() {
+            game =  object : AsyncTask<Void, Void, Boolean>() {
                 override fun doInBackground(vararg p0: Void?): Boolean {
-                    while (!isCancelled){
+                    while (!isCancelled) {
                         try {
                             tileMap.init() //清除地圖
                             Thread.sleep(80)
@@ -126,9 +128,25 @@ class MainActivity : AppCompatActivity() {
                             tileMap.setBodys2tileMap() //將身體元件放入地圖
                             draw(holder) //依據地圖資料畫圖
                             update() //更新Body資料
-                        }catch (e: InterruptedException){
+                        } catch (e: InterruptedException) {
                             e.printStackTrace()
-                        }catch (e: Exception){
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                    return true
+                }
+            }
+            gametime =  object : AsyncTask<Void, Void, Boolean>() {
+                override fun doInBackground(vararg p0: Void?): Boolean {
+                    while (!isCancelled) {
+                        try {
+                            time+=1
+                            setTimetext()
+                            Thread.sleep(1000)
+                        } catch (e: InterruptedException) {
+                            e.printStackTrace()
+                        } catch (e: Exception) {
                             e.printStackTrace()
                         }
                     }
@@ -264,7 +282,6 @@ class MainActivity : AppCompatActivity() {
 
         /*移動snake中的widget位置*/
         private fun move(snake: Snake){
-
             val head = mySnake.getHead()
 
             var newR = head.r
@@ -317,6 +334,8 @@ class MainActivity : AppCompatActivity() {
                         mySnake.addWidget(SnakeWidget(last.preR, last.preC, Block.Companion.Type.SNAKE_WIDGET))
                         food.removeWidget(getCollision_R_C(myHead))
                         food.generateMuitipleFoods(tileMap,1)
+                        score+=100
+                        scoreText.text = "Score:" + score.toString()
                     }
                     Block.Companion.Type.WALL, Block.Companion.Type.SNAKE_WIDGET -> {
                         gameOver()
@@ -356,12 +375,14 @@ class MainActivity : AppCompatActivity() {
 
         /*遊戲開始*/
         private fun gameStart(){
-            game.execute()
+            game.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+            gametime.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
         }
 
         /*遊戲停止*/
         private fun gameStop(){
             game.cancel(true)
+            gametime.cancel(true)
             isStop = true
         }
 
@@ -380,8 +401,9 @@ class MainActivity : AppCompatActivity() {
 
             return Bitmap.createBitmap(bitmap,0,0,width,height,mat,true)
         }
-
+        private fun setTimetext(){
+            timeText.text = "time:" + (time/60).toString() + ":" + (time%60).toString()
+        }
     }
-
 }
 
