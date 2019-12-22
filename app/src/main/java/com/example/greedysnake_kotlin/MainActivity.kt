@@ -1,14 +1,17 @@
 package com.example.greedysnake_kotlin
 
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.graphics.*
 import android.os.AsyncTask
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MotionEventCompat
 import kotlinx.android.synthetic.main.activity_main.*
@@ -38,12 +41,30 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        mainGame = Game(surfaceView)
+
+        // 倒數計時
+//        object: CountDownTimer(3000, 1000) {
+//
+//            override fun onTick(millisUntilFinished: Long) {
+//                Toast.makeText(applicationContext, ((millisUntilFinished+1000)/1000).toString(), Toast.LENGTH_SHORT).show()
+//            }
+//            override fun onFinish() {
+//                Toast.makeText(applicationContext, "WTF", Toast.LENGTH_SHORT).show()
+//
+//            }
+//        }.start()
+        gameStart()
     }
 
     inner class Game(surfaceView: SurfaceView): SurfaceHolder.Callback{
+
+        // region variables
+
+        // score
         private var score :Int = 0
         private var time :Int = 0
+
+        // touch
         private var x1 :Float = 0.0f
         private var x2 :Float = 0.0f
         private var y1 :Float = 0.0f
@@ -51,31 +72,28 @@ class MainActivity : AppCompatActivity() {
         private var mode = 0
         private var touchDir = Snake.Companion.Direction.DOWN
 
+        // surfaceView
         private lateinit var tileMap: TileMap
         private lateinit var holder: SurfaceHolder
-
+        private lateinit var game: AsyncTask<Void, Void, Boolean>
+        private lateinit var gameTime: AsyncTask<Void, Void, Boolean>
         private var isStop = false
-
         private val gridPaint = Paint().apply {
             color = Color.WHITE
             strokeWidth = 2f
         }
-
         private val tilePaint = Paint().apply {
             color = Color.RED
         }
 
+        // snake
         private lateinit var mySnake: Snake
-
         private lateinit var food: Food
-
         private lateinit var wall: Wall
 
-        private lateinit var game: AsyncTask<Void, Void, Boolean>
-        private lateinit var gametime: AsyncTask<Void, Void, Boolean>
+        // endregion
 
-        //--------------------------------------------------------------------------------------------------------
-
+        // 初始化
         init {
             intent?.extras?.let {
                 mode = it.getInt("mode")
@@ -126,8 +144,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // region surfaceView setting
+
         private fun resetAsyncTask() {
-            game =  object : AsyncTask<Void, Void, Boolean>() {
+            game =  @SuppressLint("StaticFieldLeak")
+            object : AsyncTask<Void, Void, Boolean>() {
                 override fun doInBackground(vararg p0: Void?): Boolean {
                     while (!isCancelled) {
                         try {
@@ -146,7 +167,8 @@ class MainActivity : AppCompatActivity() {
                     return true
                 }
             }
-            gametime =  object : AsyncTask<Void, Void, Boolean>() {
+            gameTime =  @SuppressLint("StaticFieldLeak")
+            object : AsyncTask<Void, Void, Boolean>() {
                 override fun doInBackground(vararg p0: Void?): Boolean {
                     while (!isCancelled) {
                         try {
@@ -154,7 +176,7 @@ class MainActivity : AppCompatActivity() {
                                 0->time-=1
                                 1->time+=1
                             }
-                            setTimetext()
+                            setTimeText()
                             Thread.sleep(1000)
                             if (time<=0){
                                 gameOver()
@@ -180,7 +202,6 @@ class MainActivity : AppCompatActivity() {
             }else{
                 gameInit()
             }
-
         }
 
         override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
@@ -190,36 +211,6 @@ class MainActivity : AppCompatActivity() {
         override fun surfaceDestroyed(holder: SurfaceHolder?) {
             gameStop()
             Log.e("Msg", "Destroyed!")
-        }
-
-        /*遊戲初始化*/
-        private fun gameInit(){
-
-            BodyContainer.bodys = BodyContainer.bodysInit()
-
-            tileMap = TileMap.getTileMap(holder)
-
-            mySnake = Snake(tag = Body.Companion.BodyType.ME, dir = Snake.Companion.Direction.DOWN).apply {
-                addWidget(SnakeWidget(1,5,Block.Companion.Type.SNAKE_HEAD))
-                addWidget(SnakeWidget(1,6,Block.Companion.Type.SNAKE_WIDGET))
-            }
-
-            food = Food().apply {
-                addWidget(GameWidget(10,5,Block.Companion.Type.FOOD))
-                addWidget(GameWidget(11,5,Block.Companion.Type.FOOD))
-                addWidget(GameWidget(12,5,Block.Companion.Type.FOOD))
-                addWidget(GameWidget(13,5,Block.Companion.Type.FOOD))
-                addWidget(GameWidget(14,5,Block.Companion.Type.FOOD))
-                addWidget(GameWidget(15,5,Block.Companion.Type.FOOD))
-            }
-            wall = Wall.initWall(tileMap)
-
-            BodyContainer.add(mySnake)
-            BodyContainer.add(food)
-            BodyContainer.add(wall)
-
-            resetAsyncTask()
-            gameStart()
         }
 
         /*繪圖*/
@@ -277,6 +268,41 @@ class MainActivity : AppCompatActivity() {
             else -> {
                 Color.BLACK
             }
+        }
+
+        // endregion
+
+        // region gameSetting
+
+        /*遊戲初始化*/
+        private fun gameInit(){
+
+            BodyContainer.bodys = BodyContainer.bodysInit()
+
+            tileMap = TileMap.getTileMap(holder)
+
+            mySnake = Snake(tag = Body.Companion.BodyType.ME, dir = Snake.Companion.Direction.DOWN).apply {
+                addWidget(SnakeWidget(1,5,Block.Companion.Type.SNAKE_HEAD))
+                addWidget(SnakeWidget(1,6,Block.Companion.Type.SNAKE_WIDGET))
+            }
+
+            food = Food().apply {
+                addWidget(GameWidget(10,5,Block.Companion.Type.FOOD))
+                addWidget(GameWidget(11,5,Block.Companion.Type.FOOD))
+                addWidget(GameWidget(12,5,Block.Companion.Type.FOOD))
+                addWidget(GameWidget(13,5,Block.Companion.Type.FOOD))
+                addWidget(GameWidget(14,5,Block.Companion.Type.FOOD))
+                addWidget(GameWidget(15,5,Block.Companion.Type.FOOD))
+            }
+
+            wall = Wall.initWall(tileMap)
+
+            BodyContainer.add(mySnake)
+            BodyContainer.add(food)
+            BodyContainer.add(wall)
+
+            resetAsyncTask()
+            gameStart()
         }
 
         /*資料更新(Body們的資料)*/
@@ -340,14 +366,14 @@ class MainActivity : AppCompatActivity() {
 
         /*碰撞後的處理*/
         private fun collisionSolve(){
-            var myHead = mySnake.getHead()
+            val myHead = mySnake.getHead()
             if (isCollision(myHead)){
                 Log.e("碰撞發生!!!，碰撞類型",getCollisionType(myHead)?.name.toString())
                 when(getCollisionType(myHead)){
                     Block.Companion.Type.FOOD -> {
                         val last = mySnake.widgets.last() as SnakeWidget
                         mySnake.addWidget(SnakeWidget(last.preR, last.preC, Block.Companion.Type.SNAKE_WIDGET))
-                        food.removeWidget(getCollision_R_C(myHead))
+                        food.removeWidget(getCollisionRowAndColumn(myHead))
                         food.generateMuitipleFoods(tileMap,1)
                         score+=100
                         scoreText.text = "Score:" + score.toString()
@@ -380,24 +406,23 @@ class MainActivity : AppCompatActivity() {
         }
 
         /*取得和元件碰撞的元件的Row和Column*/
-        private fun getCollision_R_C(widget: GameWidget): Map<String, Int>{
+        private fun getCollisionRowAndColumn(widget: GameWidget): Map<String, Int>{
             val r = widget.r
             val c = widget.c
-            val result = mapOf(Pair("r",r), Pair("c",c))
 
-            return result
+            return mapOf(Pair("r",r), Pair("c",c))
         }
 
         /*遊戲開始*/
         private fun gameStart(){
             game.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
-            gametime.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+            gameTime.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
         }
 
         /*遊戲停止*/
         private fun gameStop(){
             game.cancel(true)
-            gametime.cancel(true)
+            gameTime.cancel(true)
             isStop = true
         }
 
@@ -429,9 +454,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         /*設置分數*/
-        private fun setTimetext(){
+        private fun setTimeText(){
             timeText.text = "time:" + (time/60).toString() + ":" + (time%60).toString()
         }
+
+        // endregion
     }
 
     // 返回鍵
@@ -450,6 +477,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         builder.show()
+    }
+
+    private fun gameStart() {
+        Game(surfaceView)
     }
 }
 
