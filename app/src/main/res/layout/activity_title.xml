@@ -29,10 +29,12 @@
         android:background="@null"
         android:contentDescription="@string/start_Description"
         android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title_image"
+        app:layout_constraintVertical_bias="0.13999999"
         app:srcCompat="@drawable/ic_title_button_start" />
 
     <ImageButton
@@ -71,8 +73,6 @@
         app:layout_constraintBottom_toTopOf="@+id/start_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title_image"
-        app:layout_constraintVertical_bias="0.94"
         app:srcCompat="@drawable/ic_title_button_white" />
 
     <ImageButton
