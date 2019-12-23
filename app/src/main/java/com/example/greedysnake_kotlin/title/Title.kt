@@ -1,7 +1,6 @@
 package com.example.greedysnake_kotlin.title
 
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,13 +8,12 @@ import android.transition.TransitionManager
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.*
-import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.greedysnake_kotlin.MainActivity
 import com.example.greedysnake_kotlin.R
 import kotlinx.android.synthetic.main.activity_title.*
-import kotlin.system.exitProcess
 
 class Title : AppCompatActivity() {
 
@@ -30,6 +28,8 @@ class Title : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_title)
+
+        hideNavigation()
 
         // region button
 
@@ -49,6 +49,13 @@ class Title : AppCompatActivity() {
         }
 
         // endregion
+    }
+
+    // 隱藏導覽列
+    private fun hideNavigation() {
+        window.decorView.apply {
+            systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN
+        }
     }
 
     // 返回鍵
@@ -146,4 +153,6 @@ class Title : AppCompatActivity() {
 
         // endregion
     }
+
+
 }
