@@ -37,10 +37,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Game(surfaceView)
+        val game = Game(surfaceView)
     }
 
     inner class Game(surfaceView: SurfaceView): SurfaceHolder.Callback{
+
 
         private var x1 :Float = 0.0f
         private var x2 :Float = 0.0f
