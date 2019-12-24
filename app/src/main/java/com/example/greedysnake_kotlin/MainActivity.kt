@@ -4,9 +4,7 @@ package com.example.greedysnake_kotlin
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.graphics.*
-import android.os.AsyncTask
-import android.os.Bundle
-import android.os.CountDownTimer
+import android.os.*
 import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
@@ -46,6 +44,11 @@ class MainActivity : AppCompatActivity() {
         mainGame = Game(surfaceView)
 
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.e("!!!!!!!!!!!!!!","Activity被摧毀了!!")
     }
 
     inner class Game(surfaceView: SurfaceView): SurfaceHolder.Callback{
@@ -418,9 +421,9 @@ class MainActivity : AppCompatActivity() {
 
         /*遊戲結束處理*/
         private fun gameOver(){
-            gameOverDialog()
             gameStop()
-            finish()
+            gameOverDialog()
+//            finish()
         }
 
         // 遊戲暫停
@@ -436,18 +439,21 @@ class MainActivity : AppCompatActivity() {
 
         private fun gameOverDialog() {
 
-            val builder = AlertDialog.Builder(this@MainActivity)
-            builder.setTitle("遊戲結束")
-            builder.setMessage("是否重新開始遊戲?")
+            Handler(Looper.getMainLooper()).post {
+                val builder = AlertDialog.Builder(this@MainActivity)
+                builder.setTitle("遊戲結束")
+                builder.setMessage("是否重新開始遊戲?")
 
-            builder.setNegativeButton("回到標題") { _, _ ->
-                finish()
-            }
-            builder.setPositiveButton("重新開始遊戲") { _, _ ->
-                gameResume()
+                builder.setNegativeButton("回到標題") { _, _ ->
+                    finish()
+                }
+                builder.setPositiveButton("重新開始遊戲") { _, _ ->
+                    gameInit()
+                }
+
+                builder.show()
             }
 
-            builder.show()
         }
 
         /*調整Bitmap比例*/
