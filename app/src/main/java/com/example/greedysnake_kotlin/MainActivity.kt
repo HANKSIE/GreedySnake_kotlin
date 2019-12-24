@@ -43,18 +43,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
 
-        // 倒數計時
-//        object: CountDownTimer(3000, 1000) {
-//
-//            override fun onTick(millisUntilFinished: Long) {
-//                Toast.makeText(applicationContext, ((millisUntilFinished+1000)/1000).toString(), Toast.LENGTH_SHORT).show()
-//            }
-//            override fun onFinish() {
-//                Toast.makeText(applicationContext, "WTF", Toast.LENGTH_SHORT).show()
-//
-//            }
-//        }.start()
-        gameStart()
+        mainGame = Game(surfaceView)
+
 
     }
 
@@ -108,9 +98,9 @@ class MainActivity : AppCompatActivity() {
             }
             surfaceView.holder.addCallback(this)
 
-            surfaceView.setOnTouchListener { v, event ->
-                val action: Int = MotionEventCompat.getActionMasked(event)
-                when (action) {
+            // 螢幕滑動
+            snakeLayout.setOnTouchListener { _, event ->
+                when (MotionEventCompat.getActionMasked(event)) {
                     MotionEvent.ACTION_DOWN -> {//swd
                         x1 = event.x
                         y1 = event.y
@@ -119,26 +109,20 @@ class MainActivity : AppCompatActivity() {
                     MotionEvent.ACTION_UP -> { //手指放開螢幕
                         x2 = event.x
                         y2 = event.y
-                        var X_move = x2 - x1
-                        var Y_move = y2 - y1
+                        val xMove = x2 - x1
+                        val yMove = y2 - y1
 
-                        if (abs(X_move)>abs(Y_move)){//移動距離：X軸>Y軸表示左右移動
-                            if (X_move > 0){//表示向右
-                                touchDir = Snake.Companion.Direction.RIGHT
-//                        Toast.makeText(this, "向右滑 swipe ${x1} sub ${x2} = ${X_move}", Toast.LENGTH_SHORT).show()
-                            }
-                            else{//表示向左
-                                touchDir = Snake.Companion.Direction.LEFT
-//                        Toast.makeText(this, "向左滑 swipe ${x1} sub ${x2} = ${X_move}", Toast.LENGTH_SHORT).show()
+                        touchDir = if (abs(xMove)>abs(yMove)){//移動距離：X軸>Y軸表示左右移動
+                            if (xMove > 0){//表示向右
+                                Snake.Companion.Direction.RIGHT
+                            } else{//表示向左
+                                Snake.Companion.Direction.LEFT
                             }
                         }else{//移動距離：Y軸>X軸表示上下移動
-                            if (Y_move > 0){//表示向下
-                                touchDir = Snake.Companion.Direction.DOWN
-//                        Toast.makeText(this, "向下滑 swipe ${x1} sub ${x2} = ${Y_move}", Toast.LENGTH_SHORT).show()
-                            }
-                            else{//表示向上
-                                touchDir = Snake.Companion.Direction.UP
-//                        Toast.makeText(this, "向上滑 swipe ${x1} sub ${x2} = ${Y_move}", Toast.LENGTH_SHORT).show()
+                            if (yMove > 0){//表示向下
+                                Snake.Companion.Direction.DOWN
+                            } else{//表示向上
+                                Snake.Companion.Direction.UP
                             }
                         }
                         true
@@ -186,9 +170,9 @@ class MainActivity : AppCompatActivity() {
                                 gameOver()
                             }
                         } catch (e: InterruptedException) {
-                            e.printStackTrace()
+//                            e.printStackTrace()
                         } catch (e: Exception) {
-                            e.printStackTrace()
+//                            e.printStackTrace()
                         }
                     }
                     return true
@@ -197,6 +181,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun surfaceCreated(holder: SurfaceHolder?) {
+
             Log.e("Msg", "Created!")
             this.holder = holder!!
             if (isStop){
@@ -375,6 +360,7 @@ class MainActivity : AppCompatActivity() {
                 Log.e("碰撞發生!!!，碰撞類型",getCollisionType(myHead)?.name.toString())
                 when(getCollisionType(myHead)){
                     Block.Companion.Type.FOOD -> {
+//                        Music.snakeMove(this@MainActivity)
                         val last = mySnake.widgets.last() as SnakeWidget
                         mySnake.addWidget(SnakeWidget(last.preR, last.preC, Block.Companion.Type.SNAKE_WIDGET))
                         food.removeWidget(getCollisionRowAndColumn(myHead))
@@ -432,6 +418,7 @@ class MainActivity : AppCompatActivity() {
 
         /*遊戲結束處理*/
         private fun gameOver(){
+            gameOverDialog()
             gameStop()
             finish()
         }
@@ -445,6 +432,22 @@ class MainActivity : AppCompatActivity() {
         fun gameResume() {
             resetAsyncTask()
             gameStart()
+        }
+
+        private fun gameOverDialog() {
+
+            val builder = AlertDialog.Builder(this@MainActivity)
+            builder.setTitle("遊戲結束")
+            builder.setMessage("是否重新開始遊戲?")
+
+            builder.setNegativeButton("回到標題") { _, _ ->
+                finish()
+            }
+            builder.setPositiveButton("重新開始遊戲") { _, _ ->
+                gameResume()
+            }
+
+            builder.show()
         }
 
         /*調整Bitmap比例*/
@@ -481,10 +484,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         builder.show()
-    }
-
-    private fun gameStart() {
-        Game(surfaceView)
     }
 }
 

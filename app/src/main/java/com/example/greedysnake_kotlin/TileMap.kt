@@ -23,10 +23,6 @@ class TileMap(gridRow: Int, gridColumn: Int, tileWidth: Float, tileHeight: Float
     val tileHeight = tileHeight
     val map = Array(gridColumn, {arrayOfNulls<Tile>(gridRow)})
 
-
-
-
-
     /*地圖初始化，將map裡面塞滿tile*/
     init {
         for (c in map.indices){
@@ -76,7 +72,7 @@ class TileMap(gridRow: Int, gridColumn: Int, tileWidth: Float, tileHeight: Float
     }
 
     /*將Body的GameWidget.tag到相對應的map位置*/
-    fun setTileTagByBody(body: Body){
+    private fun setTileTagByBody(body: Body){
 //        Log.i("訊息 map size", "[${map.size},${map[0].size}]")
 //        Log.i("訊息 map grid", "[$gridRow,$gridColumn]")
         for (widget in body.widgets){
