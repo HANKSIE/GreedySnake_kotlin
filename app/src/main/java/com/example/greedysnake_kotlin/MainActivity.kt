@@ -166,9 +166,9 @@ class MainActivity : AppCompatActivity() {
                                 gameOver()
                             }
                         } catch (e: InterruptedException) {
-                            e.printStackTrace()
+//                            e.printStackTrace()
                         } catch (e: Exception) {
-                            e.printStackTrace()
+//                            e.printStackTrace()
                         }
                     }
                     return true
@@ -414,6 +414,7 @@ class MainActivity : AppCompatActivity() {
 
         /*遊戲結束處理*/
         private fun gameOver(){
+            gameOverDialog()
             gameStop()
             finish()
         }
@@ -429,8 +430,20 @@ class MainActivity : AppCompatActivity() {
             gameStart()
         }
 
-        fun checkGameInit(): Boolean {
-            return (::game.isInitialized)
+        private fun gameOverDialog() {
+
+            val builder = AlertDialog.Builder(this@MainActivity)
+            builder.setTitle("遊戲結束")
+            builder.setMessage("是否重新開始遊戲?")
+
+            builder.setNegativeButton("回到標題") { _, _ ->
+                finish()
+            }
+            builder.setPositiveButton("重新開始遊戲") { _, _ ->
+                gameResume()
+            }
+
+            builder.show()
         }
 
         /*調整Bitmap比例*/
