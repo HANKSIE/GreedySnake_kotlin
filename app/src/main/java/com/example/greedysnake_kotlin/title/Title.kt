@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.example.greedysnake_kotlin.ClockActivity
 import com.example.greedysnake_kotlin.MainActivity
 import com.example.greedysnake_kotlin.R
 import kotlinx.android.synthetic.main.activity_title.*
@@ -37,9 +38,9 @@ class Title : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_title)
 
-        init()
-        initMusic()
 
+        initMusic()
+        init()
         // region button
 
         // 模式按鈕
@@ -127,7 +128,7 @@ class Title : AppCompatActivity() {
     // 開始
     private fun btnStartSet() {
         Log.d("TAG", mode[modeIndex])
-        val startIntent = Intent(this, MainActivity::class.java)
+        val startIntent = Intent(this, ClockActivity::class.java)
         startIntent.putExtra("mode", modeIndex)
         startActivityForResult(startIntent,1)
     }

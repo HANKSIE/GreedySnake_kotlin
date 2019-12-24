@@ -44,18 +44,6 @@ class MainActivity : AppCompatActivity() {
 
         mainGame = Game(surfaceView)
 
-        // 倒數計時
-        object: CountDownTimer(3000, 1000) {
-
-            override fun onTick(millisUntilFinished: Long) {
-                Toast.makeText(applicationContext, ((millisUntilFinished+1000)/1000).toString(), Toast.LENGTH_SHORT).show()
-            }
-            override fun onFinish() {
-
-                Toast.makeText(applicationContext, "WTF", Toast.LENGTH_SHORT).show()
-
-            }
-        }.start()
     }
 
     inner class Game(surfaceView: SurfaceView): SurfaceHolder.Callback{
