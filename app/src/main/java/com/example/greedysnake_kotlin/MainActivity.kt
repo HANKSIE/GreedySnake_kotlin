@@ -368,6 +368,7 @@ class MainActivity : AppCompatActivity() {
                 Log.e("碰撞發生!!!，碰撞類型",getCollisionType(myHead)?.name.toString())
                 when(getCollisionType(myHead)){
                     Block.Companion.Type.FOOD -> {
+//                        Music.snakeMove(this@MainActivity)
                         val last = mySnake.widgets.last() as SnakeWidget
                         mySnake.addWidget(SnakeWidget(last.preR, last.preC, Block.Companion.Type.SNAKE_WIDGET))
                         food.removeWidget(getCollisionRowAndColumn(myHead))

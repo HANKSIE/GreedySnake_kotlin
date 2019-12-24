@@ -2,6 +2,7 @@ package com.example.greedysnake_kotlin.title
 
 import android.content.Context
 import android.content.Intent
+import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.transition.TransitionManager
@@ -23,11 +24,21 @@ class Title : AppCompatActivity() {
     private var mode = listOf("normal", "unlimited", "prop")
     private var lastTime: Long = 0
 
+    //region Sound and Music
+    private lateinit var titleBGM: MediaPlayer
+    private lateinit var btnSound: MediaPlayer
+    private lateinit var btnChangeSound: MediaPlayer
+    private lateinit var settingSound: MediaPlayer
+    //endregion
+
     // endregion
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_title)
+
+        init()
+        initMusic()
 
         // region button
 
@@ -70,28 +81,33 @@ class Title : AppCompatActivity() {
 
         val currentTime = System.currentTimeMillis()
 
-        if (currentTime - lastTime > 3* 1000) {
+        if (currentTime - lastTime > 2* 1000) {
             lastTime = currentTime
             Toast.makeText(this, "再點一次以離開", Toast.LENGTH_SHORT).show()
         } else {
             super.finish()
         }
+    }
 
-        // region alert example
-//        val builder = AlertDialog.Builder(this)
-//        builder.setTitle("離開")
-//        builder.setMessage("你確定要離開嗎")
-//
-//        builder.setNegativeButton("NO") { _, _ ->
-//            Toast.makeText(applicationContext, "Comeback", Toast.LENGTH_LONG).show()
-//        }
-//        builder.setPositiveButton("OK") { _, _ ->
-//            exitProcess(-1)
-//        }
-//
-//        builder.show()
+    // 遊戲初始化
+    private fun init() {
+        titleBGM.start()
+    }
 
-        //endregion
+    // 初始化音樂
+    private fun initMusic() {
+        // 標題
+        titleBGM = MediaPlayer.create(this, R.raw.title_background_music)
+        titleBGM.isLooping = true
+
+        // 模式按鈕
+        btnChangeSound = MediaPlayer.create(this, R.raw.mode_changing_sound)
+
+        // 其他按鈕
+        btnSound = MediaPlayer.create(this, R.raw.button_sound)
+
+        // 設定
+        settingSound = MediaPlayer.create(this, R.raw.setting_sound)
     }
 
     // 切換模式
@@ -113,7 +129,6 @@ class Title : AppCompatActivity() {
         Log.d("TAG", mode[modeIndex])
         val startIntent = Intent(this, MainActivity::class.java)
         startIntent.putExtra("mode", modeIndex)
-//        startActivity(startIntent)
         startActivityForResult(startIntent,1)
     }
 
