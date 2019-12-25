@@ -84,6 +84,7 @@ class MainActivity : AppCompatActivity() {
         private lateinit var wall: Wall
 
         private var isGameOver = false
+        private var hasContinueGameDialog = false
 
         // endregion
 
@@ -145,6 +146,7 @@ class MainActivity : AppCompatActivity() {
                             mySnake.setNewDir(touchDir)
                             tileMap.setBodys2tileMap() //將身體元件放入地圖
                             draw(holder) //依據地圖資料畫圖
+                            tileMap.preMap = tileMap.map
                             update() //更新Body資料
                         } catch (e: InterruptedException) {
 
@@ -181,18 +183,20 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun surfaceCreated(holder: SurfaceHolder?) {
-
+            this.holder = holder!!
             Log.e("Msg", "Created!")
+
             if (isGameOver){
                 draw(this.holder) //依據地圖資料畫圖
-            }
-            this.holder = holder!!
-            if (isStop){
-                Log.e("Msg", "Game Resumed!")
-                gameResume()
-            }else{
+            }else if (isStop && !isGameOver){
+                tileMap.setBodys2tileMap()
+                draw(this.holder)
+                continueGameDialog()
+            }else if (!isStop){
                 gameInit()
             }
+
+
         }
 
         override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
@@ -463,6 +467,31 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+        private fun continueGameDialog() {
+
+            if (hasContinueGameDialog){
+                return
+            }
+            
+            Handler(Looper.getMainLooper()).post {
+                hasContinueGameDialog = true
+                val builder = AlertDialog.Builder(this@MainActivity)
+                builder.setCancelable(false)
+                builder.setMessage("繼續遊戲?")
+
+                builder.setNegativeButton("繼續遊戲") { _, _ ->
+                    gameResume()
+                    hasContinueGameDialog = false
+                }
+                builder.setPositiveButton("重新開始遊戲") { _, _ ->
+                    hasContinueGameDialog = false
+                    gameInit()
+                }
+
+                builder.show()
+            }
+
+        }
         /*調整Bitmap比例*/
         private fun adjustBitmap(bitmap: Bitmap, scale: Float) : Bitmap {
             val width = bitmap.width
