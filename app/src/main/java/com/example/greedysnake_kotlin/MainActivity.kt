@@ -447,6 +447,7 @@ class MainActivity : AppCompatActivity() {
 
             Handler(Looper.getMainLooper()).post {
                 val builder = AlertDialog.Builder(this@MainActivity)
+                builder.setCancelable(false)
                 builder.setTitle("遊戲結束")
                 builder.setMessage("是否重新開始遊戲?")
 
@@ -485,6 +486,7 @@ class MainActivity : AppCompatActivity() {
         mainGame.gamePause()
 
         val builder = AlertDialog.Builder(this)
+        builder.setCancelable(false)
         builder.setTitle("暫停")
         builder.setMessage("你這麼想要暫緩嗎")
 
@@ -497,7 +499,6 @@ class MainActivity : AppCompatActivity() {
 
         builder.show()
     }
-
 
 }
 
