@@ -22,7 +22,6 @@ class TileMap(gridRow: Int, gridColumn: Int, tileWidth: Float, tileHeight: Float
     val tileWidth = tileWidth
     val tileHeight = tileHeight
     val map = Array(gridColumn, {arrayOfNulls<Tile>(gridRow)})
-    var preMap: Array<Array<Tile?>>
 
     /*地圖初始化，將map裡面塞滿tile*/
     init {
@@ -31,7 +30,6 @@ class TileMap(gridRow: Int, gridColumn: Int, tileWidth: Float, tileHeight: Float
                 map[c][r] = Tile()
             }
         }
-        preMap = map.copyOf()
     }
 
     companion object{

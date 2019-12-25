@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
         private lateinit var wall: Wall
 
         private var isGameOver = false
-        private var hasContinueGameDialog = false
+        var hasDialog = false
 
         // endregion
 
@@ -146,7 +146,6 @@ class MainActivity : AppCompatActivity() {
                             mySnake.setNewDir(touchDir)
                             tileMap.setBodys2tileMap() //將身體元件放入地圖
                             draw(holder) //依據地圖資料畫圖
-                            tileMap.preMap = tileMap.map
                             update() //更新Body資料
                         } catch (e: InterruptedException) {
 
@@ -188,11 +187,11 @@ class MainActivity : AppCompatActivity() {
 
             if (isGameOver){
                 draw(this.holder) //依據地圖資料畫圖
-            }else if (isStop && !isGameOver){
+            }else if (isStop){
                 tileMap.setBodys2tileMap()
                 draw(this.holder)
                 continueGameDialog()
-            }else if (!isStop){
+            }else {
                 gameInit()
             }
 
@@ -212,7 +211,7 @@ class MainActivity : AppCompatActivity() {
         private fun draw(holder: SurfaceHolder){
             val canvas = holder.lockCanvas()
             drawTileMap(canvas)
-            drawGridLine(canvas)
+//            drawGridLine(canvas)
             holder.unlockCanvasAndPost(canvas)
         }
 
@@ -274,10 +273,13 @@ class MainActivity : AppCompatActivity() {
 
             isGameOver = false
             score = 0
+            scoreText.text = "Score:" + score.toString()
+            
             when(mode){
                 0->time=60
                 1->time=0
             }
+
             BodyContainer.init()
 
             touchDir = Snake.Companion.Direction.DOWN
@@ -450,15 +452,18 @@ class MainActivity : AppCompatActivity() {
         private fun gameOverDialog() {
 
             Handler(Looper.getMainLooper()).post {
+                hasDialog = true
                 val builder = AlertDialog.Builder(this@MainActivity)
                 builder.setCancelable(false)
                 builder.setTitle("遊戲結束")
                 builder.setMessage("是否重新開始遊戲?")
 
                 builder.setNegativeButton("回到標題") { _, _ ->
+                    hasDialog = false
                     finish()
                 }
                 builder.setPositiveButton("重新開始遊戲") { _, _ ->
+                    hasDialog = false
                     gameInit()
                 }
 
@@ -469,22 +474,22 @@ class MainActivity : AppCompatActivity() {
 
         private fun continueGameDialog() {
 
-            if (hasContinueGameDialog){
+            if (hasDialog){
                 return
             }
-            
+
             Handler(Looper.getMainLooper()).post {
-                hasContinueGameDialog = true
+                hasDialog = true
                 val builder = AlertDialog.Builder(this@MainActivity)
                 builder.setCancelable(false)
                 builder.setMessage("繼續遊戲?")
 
                 builder.setNegativeButton("繼續遊戲") { _, _ ->
+                    hasDialog = false
                     gameResume()
-                    hasContinueGameDialog = false
                 }
                 builder.setPositiveButton("重新開始遊戲") { _, _ ->
-                    hasContinueGameDialog = false
+                    hasDialog = false
                     gameInit()
                 }
 
@@ -513,6 +518,7 @@ class MainActivity : AppCompatActivity() {
     // 返回鍵
     override fun onBackPressed() {
         mainGame.gamePause()
+        mainGame.hasDialog = true
 
         val builder = AlertDialog.Builder(this)
         builder.setCancelable(false)
@@ -520,9 +526,11 @@ class MainActivity : AppCompatActivity() {
         builder.setMessage("你這麼想要暫緩嗎")
 
         builder.setNegativeButton("離開遊戲") { _, _ ->
+            mainGame.hasDialog = false
             super.finish()
         }
         builder.setPositiveButton("繼續") { _, _ ->
+            mainGame.hasDialog = false
             mainGame.gameResume()
         }
 
