@@ -23,7 +23,6 @@ class ClockActivity : AppCompatActivity() {
         super.onStop()
         countDown.cancel()
         countDown = getCountDown(nowTime)
-        Log.e("Msg", "CountDown 畫面被Stop!!!")
     }
 
     override fun onResume() {
@@ -34,7 +33,6 @@ class ClockActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_clock)
-        Log.e("Msg", "CountDown 畫面被創建!!!")
 
         test()
 
@@ -48,7 +46,6 @@ class ClockActivity : AppCompatActivity() {
         return (object: CountDownTimer(nowTime, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 ClockActivity.nowTime = millisUntilFinished
-                Log.e("倒數",(millisUntilFinished / 1000).toInt().toString())
                 when ((millisUntilFinished / 1000).toInt()) {
                     3 -> countImageView.setImageResource(R.drawable.ic_count_3)
                     2 -> countImageView.setImageResource(R.drawable.ic_count_2)
@@ -74,6 +71,5 @@ class ClockActivity : AppCompatActivity() {
             startIntent = Intent(this@ClockActivity, MainActivity::class.java)
             startIntent.putExtra("mode", mode)
         }
-        Log.d("TAG", mode.toString())
     }
 }

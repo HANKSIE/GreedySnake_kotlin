@@ -116,12 +116,12 @@ class Title : AppCompatActivity() {
     // 切換模式
     private fun btnModeSet() {
         var index = modeIndex
-        index = if (index+1 == 3) { 0 } else { index+1 }
+        index = if (index+1 == 2) { 0 } else { index+1 }
 
         when (index) {
             0 -> {mode_button.setImageResource(R.drawable.ic_title_mode_limited); mode_background.setImageResource(R.drawable.ic_title_button_white)}
             1 -> {mode_button.setImageResource(R.drawable.ic_title_mode_unlimited); mode_background.setImageResource(R.drawable.ic_title_button_blue)}
-            2 -> {mode_button.setImageResource(R.drawable.ic_title_mode_props); mode_background.setImageResource(R.drawable.ic_title_button_yellow)}
+//            2 -> {mode_button.setImageResource(R.drawable.ic_title_mode_props); mode_background.setImageResource(R.drawable.ic_title_button_yellow)}
         }
 
         modeIndex = index
@@ -138,6 +138,8 @@ class Title : AppCompatActivity() {
     // 說明
     @SuppressLint("ClickableViewAccessibility", "InflateParams")
     private fun btnHelpSet() {
+
+//        title_layout.background.alpha = 80
 
         // region set and call help popupWindow
 
@@ -161,10 +163,7 @@ class Title : AppCompatActivity() {
         var x1 = 0.0f
         var x2: Float
 
-        // 更改圖示
-//        icon.setImageResource(R.drawable.ic_count_go)
-
-        // 更改文字
+        // 更改文字、圖示
         helpLayout.setOnTouchListener { _, event ->
             when (MotionEventCompat.getActionMasked(event)) {
                 MotionEvent.ACTION_DOWN -> {//swd
@@ -176,17 +175,16 @@ class Title : AppCompatActivity() {
                     x2 = event.x
                     val xMove = x2 - x1
 
-                    if (xMove > 0 && nowPage < 4) {
+                    if (xMove < 0 && nowPage < 3) {
                         nowPage++
-                    } else if (xMove < 0 && nowPage > 1) {
+                    } else if (xMove > 0 && nowPage > 1) {
                         nowPage--
                     }
 
                     when (nowPage) {
-                        1 -> content.text = HelpPage1.text
-                        2 -> content.text = HelpPage2.text
-                        3 -> content.text = HelpPage3.text
-                        4 -> content.text = HelpPage4.text
+                        1 -> {content.text = HelpPage1.text; icon.setImageResource(R.drawable.ic_help_image_1)}
+                        2 -> {content.text = HelpPage2.text; icon.setImageResource(R.drawable.ic_help_image_2)}
+                        3 -> {content.text = HelpPage3.text; icon.setImageResource(R.drawable.ic_help_image_3)}
                     }
 
                     return@setOnTouchListener true
