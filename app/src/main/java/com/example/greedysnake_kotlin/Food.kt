@@ -4,6 +4,7 @@
 
 package com.example.greedysnake_kotlin
 
+import android.util.Log
 import java.util.ArrayList
 
 
@@ -29,7 +30,7 @@ class Food(tag: Body.Companion.BodyType = Body.Companion.BodyType.FOOD) : Body(t
         if (canSetFoodArr.size > 0){
             val result = canSetFoodArr.random()
             this.addWidget(result)
-            //Log.i("RESULT", "${result.r}, ${result.c}")
+            Log.i("RESULT", "${result.r}, ${result.c}")
             return true
         }else{
             return false
@@ -40,15 +41,11 @@ class Food(tag: Body.Companion.BodyType = Body.Companion.BodyType.FOOD) : Body(t
     /*隨機生成多個food*/
     fun generateMuitipleFoods(tileMap: TileMap, amount: Int): Boolean{
 
-        var isAllSuccess = false
-        var flag = true
+        var isAllSuccess = true
 
         for (count in 1..amount){
             if(!generateFood(tileMap)){
-                flag = false
-            }
-            if (count == amount){
-                isAllSuccess = flag
+                isAllSuccess = false
             }
         }
 
@@ -69,5 +66,6 @@ class Food(tag: Body.Companion.BodyType = Body.Companion.BodyType.FOOD) : Body(t
         }
         return canSetFoodArr
     }
+
 }
 

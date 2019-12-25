@@ -46,11 +46,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.e("!!!!!!!!!!!!!!","Activity被摧毀了!!")
-    }
-
     inner class Game(surfaceView: SurfaceView): SurfaceHolder.Callback{
 
 
@@ -67,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         private var y1 :Float = 0.0f
         private var y2 :Float = 0.0f
         private var mode = 0
-        private var touchDir = Snake.Companion.Direction.DOWN
+        private lateinit var touchDir: Snake.Companion.Direction
 
         // surfaceView
         private lateinit var tileMap: TileMap
@@ -87,6 +82,8 @@ class MainActivity : AppCompatActivity() {
         private lateinit var mySnake: Snake
         private lateinit var food: Food
         private lateinit var wall: Wall
+
+        private var isGameOver = false
 
         // endregion
 
@@ -144,15 +141,15 @@ class MainActivity : AppCompatActivity() {
                     while (!isCancelled) {
                         try {
                             tileMap.init() //清除地圖
-                            Thread.sleep(80)
+                            Thread.sleep(100)
                             mySnake.setNewDir(touchDir)
                             tileMap.setBodys2tileMap() //將身體元件放入地圖
                             draw(holder) //依據地圖資料畫圖
                             update() //更新Body資料
                         } catch (e: InterruptedException) {
-                            e.printStackTrace()
+
                         } catch (e: Exception) {
-                            e.printStackTrace()
+
                         }
                     }
                     return true
@@ -189,8 +186,7 @@ class MainActivity : AppCompatActivity() {
             this.holder = holder!!
             if (isStop){
                 Log.e("Msg", "Game Resumed!")
-                resetAsyncTask()
-                gameStart()
+                gameResume()
             }else{
                 gameInit()
             }
@@ -269,29 +265,28 @@ class MainActivity : AppCompatActivity() {
         /*遊戲初始化*/
         private fun gameInit(){
 
-            BodyContainer.bodys = BodyContainer.bodysInit()
+            isGameOver = false
+            BodyContainer.init()
 
+            touchDir = Snake.Companion.Direction.DOWN
             tileMap = TileMap.getTileMap(holder)
 
-            mySnake = Snake(tag = Body.Companion.BodyType.ME, dir = Snake.Companion.Direction.DOWN).apply {
+            mySnake = Snake(tag = Body.Companion.BodyType.ME, dir = touchDir).apply {
                 addWidget(SnakeWidget(1,5,Block.Companion.Type.SNAKE_HEAD))
                 addWidget(SnakeWidget(1,6,Block.Companion.Type.SNAKE_WIDGET))
             }
 
-            food = Food().apply {
-                addWidget(GameWidget(10,5,Block.Companion.Type.FOOD))
-                addWidget(GameWidget(11,5,Block.Companion.Type.FOOD))
-                addWidget(GameWidget(12,5,Block.Companion.Type.FOOD))
-                addWidget(GameWidget(13,5,Block.Companion.Type.FOOD))
-                addWidget(GameWidget(14,5,Block.Companion.Type.FOOD))
-                addWidget(GameWidget(15,5,Block.Companion.Type.FOOD))
-            }
 
             wall = Wall.initWall(tileMap)
-
             BodyContainer.add(mySnake)
-            BodyContainer.add(food)
             BodyContainer.add(wall)
+            tileMap.setBodys2tileMap()
+
+            food = Food()
+            food.generateMuitipleFoods(tileMap, 6)
+
+            BodyContainer.add(food)
+            tileMap.setBodys2tileMap()
 
             resetAsyncTask()
             gameStart()
@@ -360,7 +355,8 @@ class MainActivity : AppCompatActivity() {
         private fun collisionSolve(){
             val myHead = mySnake.getHead()
             if (isCollision(myHead)){
-                Log.e("碰撞發生!!!，碰撞類型",getCollisionType(myHead)?.name.toString())
+                Log.e("碰撞發生!!!，碰撞類型/位置","${getCollisionType(myHead)?.name}/${getCollisionRowAndColumn(myHead)}")
+
                 when(getCollisionType(myHead)){
                     Block.Companion.Type.FOOD -> {
 //                        Music.snakeMove(this@MainActivity)
@@ -421,9 +417,9 @@ class MainActivity : AppCompatActivity() {
 
         /*遊戲結束處理*/
         private fun gameOver(){
+            isGameOver = true
             gameStop()
             gameOverDialog()
-//            finish()
         }
 
         // 遊戲暫停
@@ -433,8 +429,10 @@ class MainActivity : AppCompatActivity() {
 
         // 遊戲繼續
         fun gameResume() {
-            resetAsyncTask()
-            gameStart()
+            if(!isGameOver){
+                resetAsyncTask()
+                gameStart()
+            }
         }
 
         private fun gameOverDialog() {
@@ -491,5 +489,7 @@ class MainActivity : AppCompatActivity() {
 
         builder.show()
     }
+
+
 }
 

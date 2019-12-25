@@ -29,8 +29,8 @@ class BodyContainer {
             return null
         }
 
-        fun bodysInit(): ArrayList<Body>{
-            return ArrayList<Body>()
+        fun init(){
+            bodys =  ArrayList<Body>()
         }
 
     }
