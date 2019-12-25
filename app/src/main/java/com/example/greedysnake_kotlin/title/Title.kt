@@ -1,5 +1,6 @@
 package com.example.greedysnake_kotlin.title
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.media.MediaPlayer
@@ -135,6 +136,7 @@ class Title : AppCompatActivity() {
     }
 
     // 說明
+    @SuppressLint("ClickableViewAccessibility", "InflateParams")
     private fun btnHelpSet() {
 
         // region set and call help popupWindow
@@ -145,8 +147,8 @@ class Title : AppCompatActivity() {
 
         val popupWindow = PopupWindow(
             view,
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.MATCH_PARENT
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
         )
 
         // region set in help window detail
@@ -154,18 +156,10 @@ class Title : AppCompatActivity() {
         val helpLayout = view.findViewById<ConstraintLayout>(R.id.help_layout)
         val icon = view.findViewById<ImageView>(R.id.icon)
         val content = view.findViewById<TextView>(R.id.contentText)
-        val nowPage = 1
+        var nowPage = 1
 
-        var x1 :Float = 0.0f
-        var x2 :Float = 0.0f
-        var y1 :Float = 0.0f
-        var y2 :Float = 0.0f
-        var touchDir = "none"
-
-        // 點擊幫助視窗外面
-        helpLayout.setOnClickListener {
-            popupWindow.dismiss()
-        }
+        var x1 = 0.0f
+        var x2: Float
 
         // 更改圖示
 //        icon.setImageResource(R.drawable.ic_count_go)
@@ -175,51 +169,41 @@ class Title : AppCompatActivity() {
             when (MotionEventCompat.getActionMasked(event)) {
                 MotionEvent.ACTION_DOWN -> {//swd
                     x1 = event.x
-                    y1 = event.y
-                    true
+                    return@setOnTouchListener true
                 }
+
                 MotionEvent.ACTION_UP -> { //手指放開螢幕
                     x2 = event.x
-                    y2 = event.y
                     val xMove = x2 - x1
-                    val yMove = y2 - y1
 
-                    touchDir = if (abs(xMove) > abs(yMove)) {
-                        if (xMove > 0) {
-                            "right"
-                        } else {
-                            "left"
-                        }
-                    } else {
-                        if (yMove > 0) {
-                            "down"
-                        } else {
-                            "up"
-                        }
+                    if (xMove > 0 && nowPage < 4) {
+                        nowPage++
+                    } else if (xMove < 0 && nowPage > 1) {
+                        nowPage--
                     }
-                    Toast.makeText(this, touchDir, Toast.LENGTH_SHORT).show()
-                    true
-                }
-                else->{this.onTouchEvent(event)}
-            }
 
+                    when (nowPage) {
+                        1 -> content.text = HelpPage1.text
+                        2 -> content.text = HelpPage2.text
+                        3 -> content.text = HelpPage3.text
+                        4 -> content.text = HelpPage4.text
+                    }
+
+                    return@setOnTouchListener true
+                }
+                else -> return@setOnTouchListener true
+            }
         }
 
         // endregion
 
-        // 當 PopupWindow 結束的提示語
-        popupWindow.setOnDismissListener {
-            Toast.makeText(applicationContext, "Popup closed", Toast.LENGTH_SHORT).show()
-        }
+        // 點擊幫助視窗外面
+        popupWindow.isOutsideTouchable = true
 
         TransitionManager.beginDelayedTransition(title_layout)
 
         // 顯示
-        popupWindow.showAtLocation(
-            title_layout,
-            Gravity.CENTER,
-            0,
-            0)
+        popupWindow.showAtLocation(title_layout, Gravity.CENTER, 0, 0)
 
         // endregion
     }
