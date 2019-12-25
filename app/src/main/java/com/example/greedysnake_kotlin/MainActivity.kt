@@ -40,10 +40,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
         mainGame = Game(surfaceView)
-
-
     }
 
     inner class Game(surfaceView: SurfaceView): SurfaceHolder.Callback{
@@ -456,7 +453,7 @@ class MainActivity : AppCompatActivity() {
                 val builder = AlertDialog.Builder(this@MainActivity)
                 builder.setCancelable(false)
                 builder.setTitle("遊戲結束")
-                builder.setMessage("是否重新開始遊戲?")
+                builder.setMessage("此局獲得 $score 分，是否重新開始遊戲?")
 
                 builder.setNegativeButton("回到標題") { _, _ ->
                     hasDialog = false
@@ -523,7 +520,7 @@ class MainActivity : AppCompatActivity() {
         val builder = AlertDialog.Builder(this)
         builder.setCancelable(false)
         builder.setTitle("暫停")
-        builder.setMessage("你這麼想要暫緩嗎")
+        builder.setMessage("是否繼續遊戲?")
 
         builder.setNegativeButton("離開遊戲") { _, _ ->
             mainGame.hasDialog = false

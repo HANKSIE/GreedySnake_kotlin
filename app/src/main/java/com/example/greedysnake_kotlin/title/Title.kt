@@ -9,13 +9,15 @@ import android.transition.TransitionManager
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.MotionEventCompat
 import com.example.greedysnake_kotlin.ClockActivity
-import com.example.greedysnake_kotlin.MainActivity
 import com.example.greedysnake_kotlin.R
 import kotlinx.android.synthetic.main.activity_title.*
+import kotlin.math.abs
 
 class Title : AppCompatActivity() {
 
@@ -37,7 +39,6 @@ class Title : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_title)
-
 
         initMusic()
         init()
@@ -150,12 +151,58 @@ class Title : AppCompatActivity() {
 
         // region set in help window detail
 
-        val outside = view.findViewById<ConstraintLayout>(R.id.help_layout)
-        val picture = view.findViewById<TextView>(R.id.helpContent)
+        val helpLayout = view.findViewById<ConstraintLayout>(R.id.help_layout)
+        val icon = view.findViewById<ImageView>(R.id.icon)
+        val content = view.findViewById<TextView>(R.id.contentText)
+        val nowPage = 1
+
+        var x1 :Float = 0.0f
+        var x2 :Float = 0.0f
+        var y1 :Float = 0.0f
+        var y2 :Float = 0.0f
+        var touchDir = "none"
 
         // 點擊幫助視窗外面
-        outside.setOnClickListener {
+        helpLayout.setOnClickListener {
             popupWindow.dismiss()
+        }
+
+        // 更改圖示
+//        icon.setImageResource(R.drawable.ic_count_go)
+
+        // 更改文字
+        helpLayout.setOnTouchListener { _, event ->
+            when (MotionEventCompat.getActionMasked(event)) {
+                MotionEvent.ACTION_DOWN -> {//swd
+                    x1 = event.x
+                    y1 = event.y
+                    true
+                }
+                MotionEvent.ACTION_UP -> { //手指放開螢幕
+                    x2 = event.x
+                    y2 = event.y
+                    val xMove = x2 - x1
+                    val yMove = y2 - y1
+
+                    touchDir = if (abs(xMove) > abs(yMove)) {
+                        if (xMove > 0) {
+                            "right"
+                        } else {
+                            "left"
+                        }
+                    } else {
+                        if (yMove > 0) {
+                            "down"
+                        } else {
+                            "up"
+                        }
+                    }
+                    Toast.makeText(this, touchDir, Toast.LENGTH_SHORT).show()
+                    true
+                }
+                else->{this.onTouchEvent(event)}
+            }
+
         }
 
         // endregion
@@ -176,6 +223,4 @@ class Title : AppCompatActivity() {
 
         // endregion
     }
-
-
 }

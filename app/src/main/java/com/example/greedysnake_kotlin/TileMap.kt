@@ -4,7 +4,6 @@
 
 package com.example.greedysnake_kotlin
 
-import android.util.Log
 import android.view.SurfaceHolder
 
 /*
