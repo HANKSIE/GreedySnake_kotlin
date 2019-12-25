@@ -274,7 +274,7 @@ class MainActivity : AppCompatActivity() {
             isGameOver = false
             score = 0
             scoreText.text = "Score:" + score.toString()
-            
+
             when(mode){
                 0->time=60
                 1->time=0
