@@ -3,6 +3,7 @@ package com.example.greedysnake_kotlin
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Intent
 import android.graphics.*
 import android.os.*
 import android.util.Log
@@ -12,6 +13,7 @@ import android.view.SurfaceView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MotionEventCompat
+import com.example.greedysnake_kotlin.title.Title
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.Exception
 import kotlin.math.abs
@@ -35,13 +37,26 @@ import java.lang.Thread as Thread
 class MainActivity : AppCompatActivity() {
 
     private lateinit var mainGame: Game
+    private val self = this
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         mainGame = Game(surfaceView)
+        Log.e("Msg", "Activity Created!")
     }
+
+    override fun onPause() {
+        super.onPause()
+        Log.e("Msg", "Activity Paused!")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.e("Msg", "Activity Destroyed!")
+    }
+
 
     inner class Game(surfaceView: SurfaceView): SurfaceHolder.Callback{
 
@@ -523,7 +538,9 @@ class MainActivity : AppCompatActivity() {
         builder.setMessage("是否繼續遊戲?")
 
         builder.setNegativeButton("離開遊戲") { _, _ ->
+
             mainGame.hasDialog = false
+//            startActivity(Intent(self, Title::class.java))
             super.finish()
         }
         builder.setPositiveButton("繼續") { _, _ ->

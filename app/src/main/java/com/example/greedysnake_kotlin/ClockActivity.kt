@@ -12,8 +12,7 @@ class ClockActivity : AppCompatActivity() {
     private var mode = 0
     private lateinit var startIntent: Intent
     private lateinit var countDown: CountDownTimer
-
-
+    private var isStop = false
 
     companion object{
         private var nowTime: Long = 4000
@@ -23,11 +22,16 @@ class ClockActivity : AppCompatActivity() {
         super.onStop()
         countDown.cancel()
         countDown = getCountDown(nowTime)
+        isStop = true
     }
 
     override fun onResume() {
         super.onResume()
-        countDown.start()
+        Log.e("Msg", "CD Resumed!")
+        if (isStop){
+            countDown.start()
+            isStop = false
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,13 +41,13 @@ class ClockActivity : AppCompatActivity() {
         test()
 
         // 倒數計時
-        countDown = getCountDown(nowTime)
-        countDown.start()
+        countDown = getCountDown(nowTime).start()
 
     }
 
     private fun getCountDown(nowTime: Long): CountDownTimer{
         return (object: CountDownTimer(nowTime, 1000) {
+
             override fun onTick(millisUntilFinished: Long) {
                 ClockActivity.nowTime = millisUntilFinished
                 when ((millisUntilFinished / 1000).toInt()) {
@@ -57,6 +61,7 @@ class ClockActivity : AppCompatActivity() {
                 ClockActivity.nowTime = 4000
                 startActivityForResult(startIntent,1)
             }
+
         })
     }
 
