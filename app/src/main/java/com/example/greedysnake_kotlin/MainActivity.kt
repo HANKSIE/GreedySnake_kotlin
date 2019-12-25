@@ -183,6 +183,9 @@ class MainActivity : AppCompatActivity() {
         override fun surfaceCreated(holder: SurfaceHolder?) {
 
             Log.e("Msg", "Created!")
+            if (isGameOver){
+                draw(this.holder) //依據地圖資料畫圖
+            }
             this.holder = holder!!
             if (isStop){
                 Log.e("Msg", "Game Resumed!")
@@ -266,6 +269,11 @@ class MainActivity : AppCompatActivity() {
         private fun gameInit(){
 
             isGameOver = false
+            score = 0
+            when(mode){
+                0->time=60
+                1->time=0
+            }
             BodyContainer.init()
 
             touchDir = Snake.Companion.Direction.DOWN
