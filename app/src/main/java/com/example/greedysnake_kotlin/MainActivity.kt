@@ -3,17 +3,15 @@ package com.example.greedysnake_kotlin
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.content.Intent
 import android.graphics.*
+import android.media.MediaPlayer
 import android.os.*
 import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MotionEventCompat
-import com.example.greedysnake_kotlin.title.Title
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.Exception
 import kotlin.math.abs
@@ -37,7 +35,10 @@ import java.lang.Thread as Thread
 class MainActivity : AppCompatActivity() {
 
     private lateinit var mainGame: Game
-    private val self = this
+
+    private lateinit var eatSound: MediaPlayer
+    private lateinit var moveSound: MediaPlayer
+    private lateinit var gameOverSound: MediaPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -143,6 +144,13 @@ class MainActivity : AppCompatActivity() {
                     else->{surfaceView.onTouchEvent(event)}
                 }
             }
+            initMusic()
+        }
+
+        private fun initMusic (){
+            eatSound = MediaPlayer.create(this@MainActivity, R.raw.eat_sound)
+            moveSound = MediaPlayer.create(this@MainActivity, R.raw.gameover_sound)
+            gameOverSound = MediaPlayer.create(this@MainActivity, R.raw.gameover_sound)
         }
 
         // region surfaceView setting
@@ -279,7 +287,6 @@ class MainActivity : AppCompatActivity() {
         // endregion
 
         // region gameSetting
-
         /*遊戲初始化*/
         private fun gameInit(){
 
@@ -385,7 +392,7 @@ class MainActivity : AppCompatActivity() {
 
                 when(getCollisionType(myHead)){
                     Block.Companion.Type.FOOD -> {
-//                        Music.snakeMove(this@MainActivity)
+                        eatSound.start()
                         val last = mySnake.widgets.last() as SnakeWidget
                         mySnake.addWidget(SnakeWidget(last.preR, last.preC, Block.Companion.Type.SNAKE_WIDGET))
                         food.removeWidget(getCollisionRowAndColumn(myHead))
@@ -443,6 +450,7 @@ class MainActivity : AppCompatActivity() {
 
         /*遊戲結束處理*/
         private fun gameOver(){
+            gameOverSound.start()
             isGameOver = true
             gameStop()
             gameOverDialog()
@@ -523,7 +531,6 @@ class MainActivity : AppCompatActivity() {
         private fun setTimeText(){
             timeText.text = "time:" + (time/60).toString() + ":" + (time%60).toString()
         }
-
         // endregion
     }
 
@@ -550,6 +557,5 @@ class MainActivity : AppCompatActivity() {
 
         builder.show()
     }
-
 }
 

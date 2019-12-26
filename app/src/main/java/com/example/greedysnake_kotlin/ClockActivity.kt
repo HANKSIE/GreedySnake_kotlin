@@ -1,6 +1,7 @@
 package com.example.greedysnake_kotlin
 
 import android.content.Intent
+import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -13,6 +14,8 @@ class ClockActivity : AppCompatActivity() {
     private lateinit var startIntent: Intent
     private lateinit var countDown: CountDownTimer
     private var isStop = false
+
+    private lateinit var clockSound: MediaPlayer
 
     companion object{
         private var nowTime: Long = 4000
@@ -39,6 +42,7 @@ class ClockActivity : AppCompatActivity() {
         setContentView(R.layout.activity_clock)
 
         test()
+        initMusic()
 
         // 倒數計時
         countDown = getCountDown(nowTime).start()
@@ -51,17 +55,16 @@ class ClockActivity : AppCompatActivity() {
             override fun onTick(millisUntilFinished: Long) {
                 ClockActivity.nowTime = millisUntilFinished
                 when ((millisUntilFinished / 1000).toInt()) {
-                    3 -> countImageView.setImageResource(R.drawable.ic_count_3)
-                    2 -> countImageView.setImageResource(R.drawable.ic_count_2)
-                    1 -> countImageView.setImageResource(R.drawable.ic_count_1)
-                    0 -> countImageView.setImageResource(R.drawable.ic_count_go)
+                    3 -> {countImageView.setImageResource(R.drawable.ic_count_3); clockSound.start()}
+                    2 -> {countImageView.setImageResource(R.drawable.ic_count_2); clockSound.start()}
+                    1 -> {countImageView.setImageResource(R.drawable.ic_count_1); clockSound.start()}
+                    0 -> {countImageView.setImageResource(R.drawable.ic_count_go); clockSound.start()}
                 }
             }
             override fun onFinish() {
                 ClockActivity.nowTime = 4000
                 startActivityForResult(startIntent,1)
             }
-
         })
     }
 
@@ -76,5 +79,9 @@ class ClockActivity : AppCompatActivity() {
             startIntent = Intent(this@ClockActivity, MainActivity::class.java)
             startIntent.putExtra("mode", mode)
         }
+    }
+
+    private fun initMusic() {
+        clockSound = MediaPlayer.create(this, R.raw.clock_sound)
     }
 }

@@ -23,7 +23,6 @@ import kotlin.math.abs
 class Title : AppCompatActivity() {
 
     // region global variables
-
     private var modeIndex = 0
     private var mode = listOf("normal", "unlimited", "prop")
     private var lastTime: Long = 0
@@ -34,7 +33,6 @@ class Title : AppCompatActivity() {
     private lateinit var btnChangeSound: MediaPlayer
     private lateinit var settingSound: MediaPlayer
     //endregion
-
     // endregion
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -121,7 +119,6 @@ class Title : AppCompatActivity() {
         when (index) {
             0 -> {mode_button.setImageResource(R.drawable.ic_title_mode_limited); mode_background.setImageResource(R.drawable.ic_title_button_white)}
             1 -> {mode_button.setImageResource(R.drawable.ic_title_mode_unlimited); mode_background.setImageResource(R.drawable.ic_title_button_blue)}
-//            2 -> {mode_button.setImageResource(R.drawable.ic_title_mode_props); mode_background.setImageResource(R.drawable.ic_title_button_yellow)}
         }
 
         modeIndex = index
@@ -139,10 +136,7 @@ class Title : AppCompatActivity() {
     @SuppressLint("ClickableViewAccessibility", "InflateParams")
     private fun btnHelpSet() {
 
-//        title_layout.background.alpha = 80
-
         // region set and call help popupWindow
-
         val inflater: LayoutInflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
         val view = inflater.inflate(R.layout.help_view, null)
@@ -154,7 +148,6 @@ class Title : AppCompatActivity() {
         )
 
         // region set in help window detail
-
         val helpLayout = view.findViewById<ConstraintLayout>(R.id.help_layout)
         val icon = view.findViewById<ImageView>(R.id.icon)
         val content = view.findViewById<TextView>(R.id.contentText)
@@ -192,7 +185,6 @@ class Title : AppCompatActivity() {
                 else -> return@setOnTouchListener true
             }
         }
-
         // endregion
 
         // 點擊幫助視窗外面
@@ -202,7 +194,6 @@ class Title : AppCompatActivity() {
 
         // 顯示
         popupWindow.showAtLocation(title_layout, Gravity.CENTER, 0, 0)
-
         // endregion
     }
 }
